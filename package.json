@@ -1,0 +1,14 @@
+{
+  "name": "job-list-app",
+  "version": "1.0.0",
+  "description": "Job list application",
+  "scripts": {
+    "install-all": "cd backend && npm install && cd ../frontend && npm install",
+    "start-backend": "cd backend && npm start",
+    "start-frontend": "cd frontend && npm start",
+    "start": "echo 'Please run start-backend and start-frontend in separate terminals'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
