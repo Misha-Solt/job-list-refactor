@@ -2,14 +2,15 @@
   "name": "job-list-app",
   "version": "1.0.0",
   "description": "Job list application",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "scripts": {
-    "install-all": "cd backend && npm install && cd ../frontend && npm install",
-    "start-backend": "cd backend && npm start",
-    "start-frontend": "cd frontend && npm start",
     "start": "npm run dev",
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
-    "dev:backend": "npm --prefix backend run dev",
-    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:frontend": "npm --workspace frontend run dev",
+    "dev:backend": "npm --workspace backend run dev",
     "prepare": "husky install",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx --max-warnings=0",
     "format": "prettier --write .",

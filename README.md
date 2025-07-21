@@ -2,35 +2,41 @@
 
 A simple application for managing jobs.
 
-## Setup
+## Setup & Quick Start
 
-1. Install dependencies:
-```
-npm run install-all
-```
+| Schritt                     | Befehl im Projekt-Root  | Erläuterung                                                                                              |
+| --------------------------- | ----------------------- | -------------------------------------------------------------------------------------------------------- |
+| Abhängigkeiten installieren | `npm install`           | ein Install-Lauf für Front- & Backend                                                                    |
+| Dev-Server starten          | `npm start`             | startet **parallel**:<br>• Backend auf <http://localhost:3001><br>• Frontend auf <http://localhost:3000> |
+| Browser öffnen              | <http://localhost:3000> |                                                                                                          |
 
-2. Start the backend:
-```
-npm run start-backend
-```
+---
 
-3. Start the frontend (in a new terminal):
-```
-npm run start-frontend
-```
+## Nützliche Skripte
 
-4. Open http://localhost:3000 in your browser
+| Befehl               | Zweck                |
+| -------------------- | -------------------- |
+| `npm run lint`       | ESLint-Check         |
+| `npm run format`     | Prettier             |
+| `npm run type-check` | TypeScript ohne Emit |
+| `npm test`           | Jest (aktuell leer)  |
+
+- 🚫 Direkter Push auf **main** || **master** ist blockiert → Workflow via Pull-Request.
+
+---
 
 ## Features
 
 - View jobs
 - Filter by status
 - See job details
+- (geplant) Status ändern
 
 ## Technologies
 
 - React
-- Node.js
+- Node.js ( ≥ 18 LTS, empfohlen 20)
+
 - Express
 
 ## Notes
