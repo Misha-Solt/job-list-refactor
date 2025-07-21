@@ -1,10 +1,8 @@
-// backend/src/app.js   (ESM)
-
 import express from 'express'
 import cors from 'cors'
 import pino from 'pino'
 
-import { jobRoutes } from './src/routes/jobRoutes.js'
+import { jobRoutes } from './routes/jobRoutes.js'
 
 const log = pino({ transport: { target: 'pino-pretty', options: { colorize: true } } })
 
