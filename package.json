@@ -7,7 +7,14 @@
     "start-backend": "cd backend && npm start",
     "start-frontend": "cd frontend && npm start",
     "start": "echo 'Please run start-backend and start-frontend in separate terminals'",
-    "prepare": "husky install"
+    "dev": "npm-run-all --parallel dev:*",
+    "dev:frontend": "npm --workspace frontend run dev",
+    "dev:backend": "npm --workspace backend  run dev",
+    "prepare": "husky install",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx --max-warnings=0",
+    "format": "prettier --write .",
+    "type-check": "tsc --noEmit",
+    "test": "jest --passWithNoTests"
   },
   "keywords": [],
   "author": "",
