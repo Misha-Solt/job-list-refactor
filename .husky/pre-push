@@ -1,3 +1,10 @@
 #!/usr/bin/env sh
-ROOT_DIR=$(git rev-parse --show-toplevel)
-bash "$ROOT_DIR/scripts/prevent_main_push.sh"
+BRANCH=$(git symbolic-ref --short HEAD)
+
+if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]; then
+  echo "❌  Push direkt auf '$BRANCH' ist untersagt – bitte Pull Request benutzen."
+  exit 1
+fi
+
+# alles ok
+exit 0

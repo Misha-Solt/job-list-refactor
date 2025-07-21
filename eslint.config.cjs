@@ -6,7 +6,7 @@ const jsxA11y = require('eslint-plugin-jsx-a11y')
 
 /** @type {import('eslint').FlatConfig[]} */
 module.exports = [
-  // базовые правила JS
+ 
   require('@eslint/js').configs.recommended,
 
   // TypeScript + React
@@ -26,7 +26,7 @@ module.exports = [
     rules: {
       'no-console': 'warn',
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-      'react/react-in-jsx-scope': 'off', // CRA/Vite не требуют import React
+      'react/react-in-jsx-scope': 'off',
     },
   },
 ]
