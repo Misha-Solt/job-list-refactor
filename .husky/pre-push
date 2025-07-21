@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+ROOT_DIR=$(git rev-parse --show-toplevel)
+bash "$ROOT_DIR/scripts/prevent_main_push.sh"
