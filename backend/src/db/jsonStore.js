@@ -4,9 +4,12 @@ import { fileURLToPath } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
-/* Absoluter Pfad zur Daten­datei */
-const DB_PATH = resolve(__dirname, '../../data/auftraege.json')
+/* Pfad aus .env oder Fallback */
+const DB_PATH = process.env.DATA_PATH
+  ? resolve(process.cwd(), process.env.DATA_PATH) // relativer Pfad in .env
+  : resolve(__dirname, '../../data/auftraege.json') // Default
 
+/* ---------- Helper ---------- */
 async function ensureFile() {
   try {
     await readFile(DB_PATH)
@@ -19,7 +22,7 @@ async function ensureFile() {
   }
 }
 
-/* Alle Jobs lesen (Array zurückgeben) */
+/* ---------- CRUD-Funktionen ---------- */
 export async function readJobs() {
   await ensureFile()
   const raw = await readFile(DB_PATH, 'utf-8')
@@ -31,7 +34,6 @@ export async function readJobs() {
   }
 }
 
-/* Komplettes Array zurückschreiben */
 export async function writeJobs(jobs) {
   await writeFile(DB_PATH, JSON.stringify(jobs, null, 2))
 }
