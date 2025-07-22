@@ -6,8 +6,14 @@ const jsxA11y = require('eslint-plugin-jsx-a11y')
 
 /** @type {import('eslint').FlatConfig[]} */
 module.exports = [
- 
   require('@eslint/js').configs.recommended,
+
+  {
+    files: ['backend/**/*.js'],
+    languageOptions: {
+      env: { node: true }, // erlaubt console, process, require, __dirname …
+    },
+  },
 
   // TypeScript + React
   {
@@ -25,6 +31,7 @@ module.exports = [
     },
     rules: {
       'no-console': 'warn',
+      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       'react/react-in-jsx-scope': 'off',
     },
