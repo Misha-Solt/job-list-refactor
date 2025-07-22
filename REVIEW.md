@@ -1,4 +1,4 @@
-# Statisches Code-Review (v0.0)
+# Statisches Code-Review (v1.0)
 
 ## Legende
 
@@ -22,16 +22,25 @@
 
 ## 1 Backend (`backend/server.js` u. a.)
 
-| ID        | Typ   | Datei / Zeile         | **Was** (Problem)                                          | **Warum** (Impact)                              | Geplante Lösung / Debug-Schritt                        |
-| --------- | ----- | --------------------- | ---------------------------------------------------------- | ----------------------------------------------- | ------------------------------------------------------ |
-| **B-1**   | bug   | `server.js:95`        | `fs.readFileSync` ohne `try/catch`                         | defekte JSON ⇒ Prozess-Abbruch (gesehen im Log) | Async `fs.promises.readFile` + zentraler Error-Handler |
-| **S-1**   | smell | `server.js:13`        | Variable `currentFilter` nie genutzt                       | Dead-Code verwirrt                              | Entfernen                                              |
-| **S-2**   | smell | global                | >15 `console.log` im Prod-Code                             | Log-Spam / evtl. sensible Daten                 | pino/winston + Level logging                           |
-| **S-3**   | smell | Datei-Größe           | Routing + Business-Logik in 1 Datei (~200 Zeilen)          | Monolith schwer test- & wartbar                 | Aufsplitten: `routes/`, `services/`, `app.js`          |
-| **B-3**   | bug   | `server.js:170`       | Endlos-`setInterval` (1 s) ruft _„Getting all auftraege…“_ | Dauerhafte CPU-Last, Log-Flood                  | Polling entfernen → Websocket/Events nutzen            |
-| **SEC-1** | sec   | `server.js:140`       | Request-Pfad ungeprüft in `readFile`                       | Path-Traversal möglich                          | Whitelist/Schema validieren                            |
-| **SEC-2** | sec   | `ws`-Init             | Kein Origin-/Token-Check                                   | Fremd-Client kann Socket öffnen                 | Auth-Middleware oder WS-JWT einbauen                   |
-| **S-6**   | smell | `server.js:0` (Start) | Fehlende `.env`-Config → Port & Datei-Pfad hart codiert    | Keine Konfig-Trennung Dev/Prod                  | dotenv + defaults                                      |
+| ID           | Typ   | Datei / Zeile         | **Was** (Problem)                                          | **Warum** (Impact)                              | Geplante Lösung / Debug-Schritt                        |
+| ------------ | ----- | --------------------- | ---------------------------------------------------------- | ----------------------------------------------- | ------------------------------------------------------ |
+| ✅ **B-1**   | bug   | `server.js:95`        | `fs.readFileSync` ohne `try/catch`                         | defekte JSON ⇒ Prozess-Abbruch (gesehen im Log) | Async `fs.promises.readFile` + zentraler Error-Handler |
+| ✅ **S-1**   | smell | `server.js:13`        | Variable `currentFilter` nie genutzt                       | Dead-Code verwirrt                              | Entfernen                                              |
+| +- **S-2**   | smell | global                | >15 `console.log` im Prod-Code                             | Log-Spam / evtl. sensible Daten                 | pino/winston + Level logging                           |
+| ✅ **S-3**   | smell | Datei-Größe           | Routing + Business-Logik in 1 Datei (~200 Zeilen)          | Monolith schwer test- & wartbar                 | Aufsplitten: `routes/`, `services/`, `app.js`          |
+| ✅ **B-3**   | bug   | `server.js:170`       | Endlos-`setInterval` (1 s) ruft _„Getting all auftraege…“_ | Dauerhafte CPU-Last, Log-Flood                  | Polling entfernen → Websocket/Events nutzen            |
+| +- **SEC-1** | sec   | `server.js:140`       | Request-Pfad ungeprüft in `readFile`                       | Path-Traversal möglich                          | Whitelist/Schema validieren                            |
+| **SEC-2**    | sec   | `ws`-Init             | Kein Origin-/Token-Check                                   | Fremd-Client kann Socket öffnen                 | Auth-Middleware oder WS-JWT einbauen                   |
+| ✅ **S-6**   | smell | `server.js:0` (Start) | Fehlende `.env`-Config → Port & Datei-Pfad hart codiert    | Keine Konfig-Trennung Dev/Prod                  | dotenv + defaults                                      |
+
+---
+
+| ID          | Typ   | Datei / Zeile       | **Was wurde ergänzt oder verbessert**                                      | **Warum es wichtig war**                     |
+| ----------- | ----- | ------------------- | -------------------------------------------------------------------------- | -------------------------------------------- |
+| ✅ **B-6**  | bug   | `jsonStore.js`      | Robustere Datenvalidierung bei defekten oder verschachtelten JSON-Formaten | verhinderte Crash bei inkonsistenten Daten   |
+| ✅ **S-11** | smell | `normalize.js`      | Einführung eines zentralen Normalisierungsmoduls                           | uneinheitliche Felder & Formate harmonisiert |
+| ✅ **B-7**  | bug   | `normalize.spec.js` | Einführung eines Jest-Tests für Daten-Normalisierung                       | Fehler frühzeitig erkannt                    |
+| ✅ **S-12** | smell | `statsService.js`   | Separate Statistik-Logik ausgelagert & in Router eingebunden               | trennte Berechnungen von API-Schicht         |
 
 ---
 
