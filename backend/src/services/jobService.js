@@ -1,49 +1,47 @@
 import { readJobs, writeJobs } from '../db/jsonStore.js'
-
-const STATUSES = ['pending', 'in-progress', 'done']
+import { STATUSES, isValidStatus } from './constants.js'
 
 /**
- * Holt alle Jobs oder filtert nach Status.
- * @param {string} status –  'all' | 'pending' | 'in-progress' | 'done'
- * @returns {Promise<Array>} Liste der Jobs
+ * Gibt alle Jobs zurück oder filtert nach Status.
+ * @param {'all' | typeof STATUSES[number]} status
+ * @returns {Promise<Array>}
  */
-
 export async function getAll(status = 'all') {
   const jobs = await readJobs()
   return status === 'all' ? jobs : jobs.filter((j) => j.status === status)
 }
 
 /**
- * Ändert den Status eines Jobs.
- * @param {number} id          – Job-ID
- * @param {string} nextStatus  – neuer Status
- * @returns {Promise<Object>}  – aktualisierter Job
+ * Liefert den „nächsten“ Status (pending → in-progress → done).
  */
+export function nextStatus(current) {
+  const idx = STATUSES.indexOf(current)
+  return idx === -1 || idx === STATUSES.length - 1 ? current : STATUSES[idx + 1]
+}
 
-export async function updateStatus(id, nextStatus) {
-  if (!STATUSES.includes(nextStatus)) {
-    throw new Error('INVALID_STATUS')
+/**
+ * Ändert den Status eines Jobs, inkl. Validierung.
+ * @param {number} id
+ * @param {string} newStatus
+ * @returns {Promise<Object>}
+ */
+export async function updateStatus(id, newStatus) {
+  if (!isValidStatus(newStatus)) {
+    const err = new Error(`INVALID_STATUS: ${newStatus}`)
+    err.statusCode = 400
+    throw err
   }
 
   const jobs = await readJobs()
   const job = jobs.find((j) => j.id === id)
 
   if (!job) {
-    throw new Error('NOT_FOUND')
+    const err = new Error('JOB_NOT_FOUND')
+    err.statusCode = 404
+    throw err
   }
 
-  job.status = nextStatus
+  job.status = newStatus // einheitliches Feld
   await writeJobs(jobs)
   return job
-}
-
-/**
- * Liefert den „nächsten“ Status (optional verwendbar im Router).
- * pending  -> in-progress
- * in-progress -> done
- * done -> done
- */
-export function nextStatus(current) {
-  const idx = STATUSES.indexOf(current)
-  return idx === -1 || idx === STATUSES.length - 1 ? current : STATUSES[idx + 1]
 }
