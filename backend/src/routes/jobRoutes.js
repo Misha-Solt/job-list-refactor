@@ -1,9 +1,6 @@
 import { Router } from 'express'
-import {
-  getAll,
-  updateStatus,
-  nextStatus, // Hilfsfunktion aus Service
-} from '../services/jobService.js'
+import { getAll, updateStatus, nextStatus } from '../services/jobService.js'
+import { getStats } from '../services/statsService.js'
 
 export const jobRoutes = Router()
 
@@ -15,7 +12,13 @@ jobRoutes.get('/', async (req, res, next) => {
   try {
     const status = req.query.status ?? 'all'
     const jobs = await getAll(status)
-    res.json(jobs)
+
+    // res.json(jobs)
+
+    // --------------------Delete later---------------
+    // legacy payload für Frontend
+    res.json({ success: true, data: jobs })
+    // -----------------------------------------------
   } catch (err) {
     next(err)
   }
@@ -51,6 +54,20 @@ jobRoutes.post('/:id/next', async (req, res, next) => {
 
     const updated = await updateStatus(id, nextStatus(job.status))
     res.json(updated)
+  } catch (err) {
+    next(err)
+  }
+})
+
+/**
+ * GET /api/jobs/stats
+ * Liefert Objekt mit Anzahl pro Status.
+ */
+
+jobRoutes.get('/stats', async (req, res, next) => {
+  try {
+    const stats = await getStats()
+    res.json(stats)
   } catch (err) {
     next(err)
   }
