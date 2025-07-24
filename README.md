@@ -12,6 +12,10 @@ A simple application for managing jobs.
 
 ---
 
+If you encounter an ERESOLVE error during `npm install`, run instead:
+
+`npm install --legacy-peer-deps`
+
 ## Nützliche Skripte
 
 | Befehl               | Zweck                |
