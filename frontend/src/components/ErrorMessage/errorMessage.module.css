@@ -1,0 +1,9 @@
+.error {
+    color: var(--text-error);
+    background-color: var(--bg-error);
+    padding: 10px;
+    margin: 15px auto;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: bold;
+  }

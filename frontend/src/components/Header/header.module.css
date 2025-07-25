@@ -1,0 +1,27 @@
+.header {
+  background-color: var(--bg-primary);
+  padding: 20px;
+  text-align: center;
+}
+
+.title {
+  color: var(--text-primary);
+  font-size: 32px;
+  margin: 10px;
+}
+
+.updated {
+  color: var(--text-secondary);
+  margin-top: 5px;
+  font-size: 14px;
+}
+
+.stats {
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.stats span + span {
+  margin-left: 20px;
+}

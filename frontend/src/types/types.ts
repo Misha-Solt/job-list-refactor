@@ -7,4 +7,11 @@ export interface Job {
   due: string
   price: number
   status: Status
+  notes?: string
+}
+export interface Stats {
+  Ausstehend?: number
+  'In Bearbeitung'?: number
+  Abgeschlossen?: number
+  total?: number
 }

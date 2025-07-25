@@ -1,0 +1,25 @@
+.statsContainer {
+  background-color: var(--bg-primary);
+  padding: 5px 0;
+  text-align: center;
+}
+
+.title {
+  font-size: 1.2rem;
+  color: var(--text-primary);
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  padding-bottom: 15px;
+}
+.row span:not(:last-child)::after {
+  content: '|';
+  margin-left: 1rem;
+  color: var(--text-secondary);
+}
