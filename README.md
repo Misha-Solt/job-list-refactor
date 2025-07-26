@@ -12,37 +12,50 @@ A simple application for managing jobs.
 
 ---
 
-If you encounter an ERESOLVE error during `npm install`, run instead:
+❗️ Falls beim Ausführen von npm install ein ERESOLVE-Fehler auftritt, verwende stattdessen folgenden Befehl:
 
 `npm install --legacy-peer-deps`
 
 ## Nützliche Skripte
 
-| Befehl               | Zweck                |
-| -------------------- | -------------------- |
-| `npm run lint`       | ESLint-Check         |
-| `npm run format`     | Prettier             |
-| `npm run type-check` | TypeScript ohne Emit |
-| `npm test`           | Jest (aktuell leer)  |
+| Befehl               | Zweck                           |
+| -------------------- | ------------------------------- |
+| `npm run lint`       | ESLint-Check                    |
+| `npm run format`     | Prettier                        |
+| `npm run type-check` | TypeScript ohne Emit            |
+| `npm test`           | Führt vorhandene Jest-Tests aus |
 
 - 🚫 Direkter Push auf **main** || **master** ist blockiert → Workflow via Pull-Request.
 
 ---
 
-## Features
+## `.env` Konfiguration (Backend)
 
-- View jobs
-- Filter by status
-- See job details
-- (geplant) Status ändern
+Das Backend liest optionale Einstellungen aus einer `.env`-Datei im Projekt-Root. Beispiel:
 
-## Technologies
+```env
+# Port für den Backend-Server (default: 3001)
+PORT_BACKEND=3001
 
-- React
-- Node.js ( ≥ 18 LTS, empfohlen 20)
+# Pfad zur JSON-Datenquelle (default: ./data/auftraege.json)
+DATA_PATH=./data/auftraege.json
 
-- Express
+ℹ️ Die Frontend-URL ist aktuell hart codiert in den Service-Files. Falls nötig, kann später REACT_APP_API_URL ergänzt werden.
 
-## Notes
+⸻
+
+Features
+	•	View jobs
+	•	Filter by status
+	•	See job details
+	•	(geplant) Status ändern
+
+Technologies
+	•	React
+	•	Node.js ( ≥ 18 LTS, empfohlen 20)
+	•	Express
+
+Notes
 
 Make sure both frontend and backend are running for the application to work properly.
+```
