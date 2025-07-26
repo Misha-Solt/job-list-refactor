@@ -13,12 +13,7 @@ jobRoutes.get('/', async (req, res, next) => {
     const status = req.query.status ?? 'all'
     const jobs = await getAll(status)
 
-    // res.json(jobs)
-
-    // --------------------Delete later---------------
-    // legacy payload für Frontend
-    res.json({ success: true, data: jobs })
-    // -----------------------------------------------
+    res.json(jobs)
   } catch (err) {
     next(err)
   }

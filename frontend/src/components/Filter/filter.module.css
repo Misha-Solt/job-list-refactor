@@ -1,0 +1,15 @@
+.filterWrapper {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.button {
+  padding: 10px 20px;
+  margin: 0 5px;
+  color: var(--text-light);
+  border: none;
+  cursor: pointer;
+  background-color: var(--color-muted);
+  transition: background-color 0.2s ease;
+  border-radius: 6px;
+}

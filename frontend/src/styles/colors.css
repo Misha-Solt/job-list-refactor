@@ -1,0 +1,23 @@
+:root {
+  /* Status colors (buttons, badges) */
+  --color-all: #007bff;
+  --color-ausstehend: #ffc107;
+  --color-inBearbeitung: #17a2b8;
+  --color-abgeschlossen: #28a745;
+
+  /* Neutral / base */
+  --color-muted: #ccc;
+
+  /* Text */
+  --text-primary: #333;
+  --text-secondary: #666;
+  --text-light: #fff;
+  --text-error: red;
+
+  /* Backgrounds */
+  --bg-primary: #f0f0f0;
+  --bg-secondary: #f9f9f9;
+  --bg-highlight: #ffffff;
+  --bg-alternate: #f5f5f5;
+  --bg-error: #ffeeee;
+}

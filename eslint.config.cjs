@@ -17,11 +17,16 @@ module.exports = [
 
   // TypeScript + React
   {
-    files: ['**/*.{ts,tsx,js,jsx}'],
+    files: ['src/**/*.{ts,tsx}'],
     ignores: ['node_modules/**', 'dist/**', 'build/**'],
     languageOptions: {
       parser: tsParser,
       parserOptions: { ecmaVersion: 'latest', sourceType: 'module', ecmaFeatures: { jsx: true } },
+    },
+    globals: {
+      document: 'readonly',
+      window: 'readonly',
+      navigator: 'readonly',
     },
     plugins: {
       '@typescript-eslint': tsPlugin,
@@ -31,9 +36,13 @@ module.exports = [
     },
     rules: {
       'no-console': 'warn',
-      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       'react/react-in-jsx-scope': 'off',
+      'react/jsx-uses-react': 'off',
+      'react/jsx-uses-vars': 'warn',
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
     },
   },
 ]
