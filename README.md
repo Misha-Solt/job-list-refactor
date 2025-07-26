@@ -39,6 +39,7 @@ PORT_BACKEND=3001
 
 # Pfad zur JSON-Datenquelle (default: ./data/auftraege.json)
 DATA_PATH=./data/auftraege.json
+```
 
 ℹ️ Die Frontend-URL ist aktuell hart codiert in den Service-Files. Falls nötig, kann später REACT_APP_API_URL ergänzt werden.
 
@@ -58,4 +59,4 @@ Technologies
 Notes
 
 Make sure both frontend and backend are running for the application to work properly.
-```
+
