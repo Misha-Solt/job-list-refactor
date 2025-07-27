@@ -1,6 +1,8 @@
 import styles from './jobCard.module.css'
 import { Job } from '../../types/types'
 import { getStatusColor } from '../../utils/StatUtil'
+import { Status } from '../../types/types'
+import useJobs from '../../hooks/useJobs'
 import moment from 'moment'
 
 interface Props {
@@ -11,6 +13,31 @@ interface Props {
 
 const JobCard = ({ job, expanded, onToggle }: Props) => {
   const formatGermanDate = (dateStr: string) => moment(dateStr).format('DD.MM.YYYY')
+
+  const statusLabels: Record<Status, string> = {
+    pending: 'Ausstehend',
+    in_progress: 'In Bearbeitung',
+    done: 'Abgeschlossen',
+  }
+
+  const nextStatus = (current: Status): Status | null => {
+    switch (current) {
+      case 'pending':
+        return 'in_progress'
+      case 'in_progress':
+        return 'done'
+      default:
+        return null
+    }
+  }
+
+  const { updateJobStatus } = useJobs()
+
+  const handleStatusClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+    const next = nextStatus(job.status)
+    if (next) updateJobStatus(job.id, next)
+  }
 
   return (
     <div className={styles.cardContainer} onClick={onToggle}>
@@ -25,8 +52,15 @@ const JobCard = ({ job, expanded, onToggle }: Props) => {
           </p>
         </div>
 
-        <div className={styles.status} style={{ backgroundColor: getStatusColor(job.status) }}>
-          {job.status}
+        <div className={styles.statusContainer}>
+          <div className={styles.status} style={{ backgroundColor: getStatusColor(job.status) }}>
+            {statusLabels[job.status]}
+          </div>
+          {nextStatus(job.status) && (
+            <button className={styles.advanceBtn} onClick={handleStatusClick}>
+              Status ändern
+            </button>
+          )}
         </div>
 
         {job.notes && (

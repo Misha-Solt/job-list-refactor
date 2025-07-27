@@ -10,9 +10,9 @@ const StatsBar = ({ stats }: StatsProps) => {
     <section className={styles.statsContainer}>
       <h3 className={styles.title}>Statistiken</h3>
       <div className={styles.row}>
-        <span>Ausstehend: {stats['Ausstehend'] || 0}</span>
-        <span>In Bearbeitung: {stats['In Bearbeitung'] || 0}</span>
-        <span>Abgeschlossen: {stats['Abgeschlossen'] || 0}</span>
+        <span>Ausstehend: {stats['pending'] || 0}</span>
+        <span>In Bearbeitung: {stats['in_progress'] || 0}</span>
+        <span>Abgeschlossen: {stats['done'] || 0}</span>
         <span>Gesamt: {stats.total || 0}</span>
       </div>
     </section>

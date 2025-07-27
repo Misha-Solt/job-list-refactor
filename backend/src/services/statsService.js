@@ -3,7 +3,7 @@ import { STATUSES } from './constants.js'
 
 /**
  * Zählt Aufträge pro Status und liefert Objekt:
- * { total: 10, Ausstehend: 4, 'In Bearbeitung': 3, Abgeschlossen: 3 }
+ * { total: 10, pending: 4, 'in_progress': 3, done: 3 }
  */
 export const getStats = async () => {
   const jobs = await readJobs()

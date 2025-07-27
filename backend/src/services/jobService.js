@@ -1,5 +1,6 @@
 import { readJobs, writeJobs } from '../db/jsonStore.js'
 import { STATUSES, isValidStatus } from './constants.js'
+import { normalize } from '../utils/normalize.js'
 
 /**
  * Gibt alle Jobs zurück oder filtert nach Status.
@@ -8,11 +9,13 @@ import { STATUSES, isValidStatus } from './constants.js'
  */
 export async function getAll(status = 'all') {
   const jobs = await readJobs()
-  return status === 'all' ? jobs : jobs.filter((j) => j.status === status)
+  const normalized = jobs.map(normalize)
+
+  return status === 'all' ? normalized : normalized.filter((j) => j.status === status)
 }
 
 /**
- * Liefert den „nächsten“ Status (pending → in-progress → done).
+ * Liefert den „nächsten“ Status (pending → in_progress → done).
  */
 export function nextStatus(current) {
   const idx = STATUSES.indexOf(current)
@@ -33,15 +36,19 @@ export async function updateStatus(id, newStatus) {
   }
 
   const jobs = await readJobs()
-  const job = jobs.find((j) => j.id === id)
+  const index = jobs.findIndex((j) => j.id === id)
 
-  if (!job) {
+  if (index === -1) {
     const err = new Error('JOB_NOT_FOUND')
     err.statusCode = 404
     throw err
   }
 
-  job.status = newStatus // einheitliches Feld
+  jobs[index] = {
+    ...jobs[index],
+    status: newStatus,
+  }
+
   await writeJobs(jobs)
-  return job
+  return normalize(jobs[index])
 }

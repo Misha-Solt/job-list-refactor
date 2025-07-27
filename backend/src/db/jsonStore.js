@@ -1,7 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { normalize } from '../utils/normalize.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -25,8 +24,8 @@ async function ensureFile() {
 }
 
 /* ---------- CRUD-Funktionen ---------- */
-/** Liefert normalisierte Liste von Jobs */
 
+/** Liefert normalisierte Liste von Jobs */
 export async function readJobs() {
   await ensureFile()
   const rawText = await readFile(DB_PATH, 'utf-8')
@@ -36,14 +35,12 @@ export async function readJobs() {
   } catch {
     throw new Error('CORRUPT_DB_JSON')
   }
-  // Datei kann entweder reines Array sein oder { auftraege: [...] }
+
   const rawList = Array.isArray(parsed) ? parsed : (parsed.auftraege ?? [])
-  return rawList.map(normalize)
+  return rawList
 }
 
 /** Überschreibt komplette Liste (normalisierte Struktur) */
-
 export async function writeJobs(jobs) {
-  // Speichern weiterhin im Wrapper-Objekt → kompatibel mit ursprünglichem Format
   await writeFile(DB_PATH, JSON.stringify({ auftraege: jobs }, null, 2))
 }

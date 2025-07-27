@@ -1,4 +1,4 @@
-export type Status = 'Ausstehend' | 'In Bearbeitung' | 'Abgeschlossen'
+export type Status = 'pending' | 'in_progress' | 'done'
 
 export interface Job {
   id: number
@@ -10,8 +10,8 @@ export interface Job {
   notes?: string
 }
 export interface Stats {
-  Ausstehend?: number
-  'In Bearbeitung'?: number
-  Abgeschlossen?: number
+  pending?: number
+  in_progress?: number
+  done?: number
   total?: number
 }

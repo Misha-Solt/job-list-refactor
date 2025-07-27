@@ -4,11 +4,11 @@ export const getStatusColor = (status: Status | ''): string => {
   switch (status) {
     case '':
       return 'var(--color-all)'
-    case 'Ausstehend':
+    case 'pending':
       return 'var(--color-ausstehend)'
-    case 'In Bearbeitung':
+    case 'in_progress':
       return 'var(--color-inBearbeitung)'
-    case 'Abgeschlossen':
+    case 'done':
       return 'var(--color-abgeschlossen)'
     default:
       return 'var(--color-muted)'

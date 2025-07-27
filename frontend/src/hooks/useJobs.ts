@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState, useCallback } from 'react'
 import { fetchJobs, fetchStats } from '../services/JobService'
-import { Job, Stats } from '../types/types'
+import { Job, Stats, Status } from '../types/types'
 import isEqual from 'lodash.isequal'
+import { patchJobStatus } from '../services/JobService'
 
 const UPDATE_INTERVAL = 5000
 
@@ -54,6 +55,22 @@ const useJobs = () => {
     setExpandedId((prev) => (prev === id ? null : id))
   }
 
+  const updateJobStatus = async (id: number, newStatus: Status) => {
+    try {
+      const updated = await patchJobStatus(id, newStatus)
+
+      setJobs((prev) =>
+        prev.map((job) => (job.id === id ? { ...job, status: updated.status } : job)),
+      )
+
+      const freshStats = await fetchStats()
+      setStats(freshStats)
+    } catch (err) {
+      console.error('Status update failed:', err)
+      setError('Status konnte nicht geändert werden')
+    }
+  }
+
   return {
     jobs,
     stats,
@@ -67,6 +84,7 @@ const useJobs = () => {
     filteredJobs,
     expandedId,
     handleExpand,
+    updateJobStatus,
   }
 }
 

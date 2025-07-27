@@ -26,7 +26,7 @@ jobRoutes.get('/', async (req, res, next) => {
 jobRoutes.patch('/:id/status', async (req, res, next) => {
   try {
     const id = Number(req.params.id)
-    const { status } = req.body // z. B. "in-progress"
+    const { status } = req.body // z. B. "in_progress"
 
     const updated = await updateStatus(id, status)
     res.json(updated)

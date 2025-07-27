@@ -8,9 +8,9 @@ interface FilterProps {
 
 const FILTERS = [
   { label: 'Alle', value: '' },
-  { label: 'Ausstehend', value: 'Ausstehend' },
-  { label: 'In Bearbeitung', value: 'In Bearbeitung' },
-  { label: 'Abgeschlossen', value: 'Abgeschlossen' },
+  { label: 'Ausstehend', value: 'pending' },
+  { label: 'In Bearbeitung', value: 'in_progress' },
+  { label: 'Abgeschlossen', value: 'done' },
 ]
 
 const Filter = ({ selectedFilter, onFilterChange }: FilterProps) => {

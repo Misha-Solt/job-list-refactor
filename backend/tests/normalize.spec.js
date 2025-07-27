@@ -18,7 +18,7 @@ test('normalize() liefert einheitliches Objekt', () => {
     title: 'Fenster Austausch',
     customer: 'Anna Fischer',
     due: '2024-04-05',
-    status: 'In Bearbeitung',
+    status: 'in_progress',
     price: 7500,
     // unnoetigesFeld_* entfernt
   })

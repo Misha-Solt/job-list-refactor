@@ -100,3 +100,8 @@
 
 
 💡 Hinweis des Entwicklers: Das aktuelle minimalistische Design wurde bewusst beibehalten, da es funktional ist und eine klare Benutzeroberfläche ohne visuelle Überladung bietet. In zukünftigen Branches können alternative UI-Ansätze erprobt werden.
+
+### [Backend] Statusänderung
+- PATCH /api/jobs/:id/status implementiert
+- Unterstützt gültige Statuswerte gem. `STATUSES`
+- Validierung + persistente Speicherung in JSON-Store
