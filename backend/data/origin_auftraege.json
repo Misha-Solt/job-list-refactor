@@ -1,11 +1,11 @@
 {
   "auftraege": [
     {
-      "id": 1,
-      "status": "pending",
+      "id": "1",
       "auftragsname": "Küchenschrank Montage",
       "kundenName": "Hans Müller",
       "faelligkeitsdatum": "2024-03-15",
+      "Status": "Ausstehend",
       "interne_notizen": "Kunde ist schwierig",
       "preis": 5000,
       "unnoetigesFeld_1": "daten",
@@ -14,11 +14,11 @@
       "material_kosten": 2000
     },
     {
-      "id": 2,
-      "status": "in_progress",
+      "id": "2",
       "Auftrags_name": "Dachstuhl Renovierung",
       "kunde_name": "Maria Schmidt",
       "faelligAm": "2024-03-20",
+      "status": "In Bearbeitung",
       "INTERNE_NOTIZEN": "Vorsicht bei Dachbalken",
       "Preis": 12000,
       "created_date": "2024-01-15T10:30:00Z",
@@ -28,88 +28,88 @@
       }
     },
     {
-      "id": 3,
-      "status": "done",
+      "id": "3",
       "AuftragsBezeichnung": "Terrassenbau",
       "Kunde": "Klaus Weber",
       "deadline": "2024-04-01",
+      "Status": "Abgeschlossen",
       "bemerkungen": "Holz bereits geliefert",
       "gesamtpreis": 8500,
       "abgeschlossenAm": "2024-03-28",
       "bewertung": 5
     },
     {
-      "id": 4,
-      "status": "pending",
+      "id": "4",
       "auftrag": "Fenster Austausch",
       "kundenname": "Anna Fischer",
       "datum_faellig": "2024-03-25",
+      "Status": "Ausstehend",
       "kommentar": "10 Fenster im EG",
       "kostenvoranschlag": 7500,
       "prioritaet": "hoch"
     },
     {
-      "id": 5,
-      "status": "in_progress",
+      "id": "5",
       "titel": "Badezimmer Sanierung",
       "auftraggeber": "Peter Bauer",
       "bis_wann": "2024-04-15",
+      "status": "In Bearbeitung",
       "interne_info": "Wasserschaden vorher beheben",
       "preis_total": 15000,
       "angefangen": true,
       "prozent_fertig": 45
     },
     {
-      "id": 6,
-      "status": "pending",
+      "id": "6",
       "job_name": "Garagentor Einbau",
       "client": "Stefanie Wolf",
       "due_date": "2024-03-30",
+      "Status": "Ausstehend",
       "notes": "Elektrisches Tor gewünscht",
       "price": "9000",
       "urgent": false,
       "kontakt_telefon": "0123456789"
     },
     {
-      "id": 7,
-      "status": "done",
+      "id": "7",
       "Name": "Parkett schleifen",
       "KUNDE": "Michael Schneider",
       "DEADLINE": "05.04.2024",
+      "status": "Abgeschlossen",
       "Notizen": "120qm Wohnfläche",
       "Betrag": 3500,
       "Rechnung_verschickt": true,
       "bezahlt": false
     },
     {
-      "id": 8,
-      "status": "in_progress",
+      "id": "8",
       "projektname": "Carport Bau",
       "klient": "Lisa Wagner",
       "fertigBis": "2024-04-20",
+      "Status": "In Bearbeitung",
       "zusatzinfo": "Doppelcarport mit Abstellraum",
       "kosten": 11000,
       "materialBestellt": "ja",
       "arbeitsStunden": 0
     },
     {
-      "id": 9,
-      "status": "pending",
+      "id": "9",
       "beschreibung": "Treppe renovieren",
       "kundenDaten": {
         "name": "Thomas Klein",
         "adresse": "Hauptstr. 123"
       },
       "ablaufdatum": "2024.04.10",
+      "status": "Ausstehend",
       "interne_notiz": "Holztreppe, 15 Stufen",
       "angebot": 4500
     },
     {
-      "id": 10,
-      "status": "done",
+      "id": "10",
       "auftragsTitel": "Dachrinne erneuern",
       "kunde": "Sandra Hoffmann",
       "soll_fertig_sein": "01-04-2024",
+      "Status": "Abgeschlossen",
       "anmerkung": "Kupfer gewünscht",
       "rechnungsbetrag": 2800,
       "material": "Kupfer",

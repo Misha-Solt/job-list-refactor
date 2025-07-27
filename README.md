@@ -12,10 +12,6 @@ A simple application for managing jobs.
 
 ---
 
-❗️ Falls beim Ausführen von npm install ein ERESOLVE-Fehler auftritt, verwende stattdessen folgenden Befehl:
-
-`npm install --legacy-peer-deps`
-
 ## Nützliche Skripte
 
 | Befehl               | Zweck                           |
@@ -41,22 +37,21 @@ PORT_BACKEND=3001
 DATA_PATH=./data/auftraege.json
 ```
 
-ℹ️ Die Frontend-URL ist aktuell hart codiert in den Service-Files. Falls nötig, kann später REACT_APP_API_URL ergänzt werden.
+ℹ️ Die Frontend-URL ist aktuell hart codiert in den Service-Files.
 
 ⸻
 
 Features
-	•	View jobs
-	•	Filter by status
-	•	See job details
-	•	(geplant) Status ändern
+• View jobs
+• Filter by status
+• See job details
+• Status ändern
 
 Technologies
-	•	React
-	•	Node.js ( ≥ 18 LTS, empfohlen 20)
-	•	Express
+• React
+• Node.js ( ≥ 18 LTS, empfohlen 20)
+• Express
 
 Notes
 
 Make sure both frontend and backend are running for the application to work properly.
-

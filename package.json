@@ -11,7 +11,6 @@
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:frontend": "npm --workspace frontend run dev",
     "dev:backend": "npm --workspace backend run dev",
-    "prepare": "husky install",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx --max-warnings=0",
     "format": "prettier --write .",
     "type-check": "tsc --noEmit",
@@ -40,10 +39,9 @@
     "typescript": "^5.8.3"
   },
   "engines": {
-    "node": ">=18 <23 || >=24"
+    "node": ">=22 <23 || >=24"
   },
   "dependencies": {
-    "lodash.isequal": "^4.5.0",
-    "react-router-dom": "^7.7.0"
+    "lodash.isequal": "^4.5.0"
   }
 }
