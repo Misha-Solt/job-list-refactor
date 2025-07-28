@@ -5,13 +5,13 @@ services:
     env: node
     rootDir: backend
     buildCommand: npm ci
-    startCommand: npm start        
+    startCommand: npm start
     plan: free
     envVars:
       - key: NODE_ENV
         value: production
-      - key: CORS_ORIGIN           
-        sync: false                
+      - key: CORS_ORIGIN
+        value: https://joblist-ui.onrender.com
 
   # ---------- Frontend ----------
   - type: static
@@ -21,5 +21,5 @@ services:
     staticPublishPath: dist
     plan: free
     envVars:
-      - key: VITE_API_URL          
-        sync: false
+      - key: VITE_API_URL
+        value: https://joblist-api.onrender.com/api
