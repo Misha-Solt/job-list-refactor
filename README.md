@@ -1,57 +1,68 @@
-# Job List Application
+# Job-List Application
 
 A simple application for managing jobs.
 
-## Setup & Quick Start
+---
 
-| Schritt                     | Befehl im Projekt-Root  | Erläuterung                                                                                              |
-| --------------------------- | ----------------------- | -------------------------------------------------------------------------------------------------------- |
-| Abhängigkeiten installieren | `npm install`           | ein Install-Lauf für Front- & Backend                                                                    |
-| Dev-Server starten          | `npm start`             | startet **parallel**:<br>• Backend auf <http://localhost:3001><br>• Frontend auf <http://localhost:3000> |
-| Browser öffnen              | <http://localhost:3000> |                                                                                                          |
+## 1 Setup & Quick-Start
+
+| Schritt                     | Befehl (Projekt-Root) | Was passiert                                                                                                                                      |
+| --------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Abhängigkeiten installieren | `npm install`         | Installiert **einmal** alle Pakete aller Workspaces (`frontend`, `backend`)                                                                       |
+| **Dev-Modus**               | `npm run dev`         | startet parallel<br>• **Backend** auf <http://localhost:3001><br>• **Vite** auf <http://localhost:5173>                                           |
+| **Prod-Vorschau**           | `npm start`           | baut das Frontend und startet:<br>• Express-API unter <http://localhost:3001><br>• Vite-Preview der Build-Artefakte unter <http://localhost:5000> |
 
 ---
 
-## Nützliche Skripte
+## 2 Nützliche Skripte
 
-| Befehl               | Zweck                           |
-| -------------------- | ------------------------------- |
-| `npm run lint`       | ESLint-Check                    |
-| `npm run format`     | Prettier                        |
-| `npm run type-check` | TypeScript ohne Emit            |
-| `npm test`           | Führt vorhandene Jest-Tests aus |
-
-- 🚫 Direkter Push auf **main** || **master** ist blockiert → Workflow via Pull-Request.
+| Befehl               | Zweck                                                  |
+| -------------------- | ------------------------------------------------------ |
+| `npm run lint`       | ESLint-Analyse aller Workspaces                        |
+| `npm run format`     | Prettier – Auto-Format                                 |
+| `npm run type-check` | TypeScript ohne Emit                                   |
+| `npm test`           | Jest + Supertest                                       |
+| `npm run build`      | Frontend-Build (wird von `npm start` implizit gerufen) |
 
 ---
 
-## `.env` Konfiguration (Backend)
+## 3 Environment-Variablen
 
-Das Backend liest optionale Einstellungen aus einer `.env`-Datei im Projekt-Root. Beispiel:
+### Frontend (`frontend/.env`)
 
-```env
-# Port für den Backend-Server (default: 3001)
-PORT_BACKEND=3001
+| Schlüssel      | Beispielwert                | Beschreibung                    |
+| -------------- | --------------------------- | ------------------------------- |
+| `VITE_API_URL` | `http://localhost:3001/api` | Basis-URL für alle REST-Aufrufe |
 
-# Pfad zur JSON-Datenquelle (default: ./data/auftraege.json)
-DATA_PATH=./data/auftraege.json
-```
+### Backend (`backend/.env`)
 
-ℹ️ Die Frontend-URL ist aktuell hart codiert in den Service-Files.
+| Schlüssel      | Standard                | Beschreibung                                                  |
+| -------------- | ----------------------- | ------------------------------------------------------------- |
+| `PORT_BACKEND` | `3001`                  | Port, den Express nutzt (Render setzt `PORT`)                 |
+| `DATA_PATH`    | `./data/auftraege.json` | Pfad zur lokalen JSON-Datei, die als einfache Datenbank dient |
+| `CORS_ORIGIN`  | `http://localhost:5173` | Erlaubte Front-Origin im Dev-Modus                            |
 
-⸻
+---
 
-Features
-• View jobs
-• Filter by status
-• See job details
-• Status ändern
+## 4 Git-Workflow
 
-Technologies
-• React
-• Node.js ( ≥ 18 LTS, empfohlen 20)
-• Express
+- Husky-Hook blockiert **direct push** auf `main`/`master` → Feature-Branch & Pull-Request.
 
-Notes
+---
 
-Make sure both frontend and backend are running for the application to work properly.
+## 5 Tech-Stack
+
+| Ebene        | Bibliotheken                                                |
+| ------------ | ----------------------------------------------------------- |
+| Frontend     | React 18 · React-Router 6/7 · Vite 5 · TypeScript 5 · axios |
+| Backend      | Express 4 · cors · pino · date-fns                          |
+| Tools        | ESLint 9 · Prettier 3 · Jest 29 · Supertest 7 · Husky 9     |
+| Mindest-Node | **22 LTS** (lokal auch ≥ 20 möglich)                        |
+
+---
+
+> _Hinweis:_ Für lokale Entwicklung immer `npm run dev` verwenden  
+> (`nodemon` + `Vite`-HMR). `npm start` ist nur für Prod-Smoke-Tests
+> und wird von Render benutzt.
+
+_Live-Demo folgt nach Merge in `feature/change-job-status`._

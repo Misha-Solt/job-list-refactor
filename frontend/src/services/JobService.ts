@@ -12,7 +12,7 @@ import axios from 'axios'
 import { Job, Stats, Status } from '../types/types'
 
 /** Basisadresse für den Backend-API-Server. */
-const API_URL = 'http://localhost:3001/api'
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
 
 /**
  * Lädt die komplette Job-Liste.

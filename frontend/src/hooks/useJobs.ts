@@ -51,17 +51,16 @@ const useJobs = () => {
 
   /* ---------- 2. Effekt: initial + intervallbasiertes Nachladen ---------- */
   useEffect(() => {
-    const tick = async () => {
+    loadData()
+    const id = setInterval(async () => {
       const scrollY = window.scrollY // Scroll-Position merken
-      await loadData()
+      await loadData() // ++apiCallCount
       window.scrollTo({ top: scrollY, behavior: 'auto' }) // Position beibehalten
-      setRefreshCount((c) => c + 1)
-    }
+      setRefreshCount((c) => c + 1) // ++refreshCount
+    }, UPDATE_INTERVAL)
 
-    tick() // einmal direkt beim Mounten
-    const id = setInterval(tick, UPDATE_INTERVAL) // danach alle X Sekunden
     return () => clearInterval(id) // Aufräumen
-  }, [loadData]) // eslint zufrieden
+  }, [loadData])
 
   /* ---------- 3. Abgeleitete Daten: gefilterte Jobs ---------- */
   const filteredJobs = useMemo(

@@ -6,15 +6,16 @@
     "frontend",
     "backend"
   ],
+  "packageManager": "npm@10.9.2",
   "scripts": {
-    "start": "npm run dev",
-    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
-    "dev:frontend": "npm --workspace frontend run dev",
-    "dev:backend": "npm --workspace backend run dev",
+    "dev": "concurrently -k -n BACK,FRONT -c blue,green \"npm -w backend run dev\" \"npm -w frontend run dev --silent\"",
+    "build": "npm -w frontend run build",
+    "start": "npm run build && NODE_OPTIONS=--no-warnings concurrently -k -n BACK,FRONT -c blue,green \"npm -w backend start\" \"npm -w frontend run preview -- --port 5000\"",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx --max-warnings=0",
     "format": "prettier --write .",
     "type-check": "tsc --noEmit",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "",
@@ -25,7 +26,6 @@
     "@types/lodash.isequal": "^4.5.8",
     "@typescript-eslint/eslint-plugin": "^8.37.0",
     "@typescript-eslint/parser": "^8.37.0",
-    "backend": "^1.0.0",
     "concurrently": "^9.2.0",
     "eslint": "^9.31.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
