@@ -20,6 +20,7 @@ const JobCard = ({ job, expanded, onToggle }: Props) => {
     done: 'Abgeschlossen',
   }
 
+  // Liefert den nächsten Status in der Pipeline oder `null`, wenn Ende erreicht.
   const nextStatus = (current: Status): Status | null => {
     switch (current) {
       case 'pending':
@@ -33,6 +34,10 @@ const JobCard = ({ job, expanded, onToggle }: Props) => {
 
   const { updateJobStatus } = useJobs()
 
+  /**
+   * Klick auf „Status ändern“ → nächster Status → API-Patch.
+   * `stopPropagation()` verhindert, dass der Klick gleichzeitig die Card auf- oder zuklappt.
+   */
   const handleStatusClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
     const next = nextStatus(job.status)
