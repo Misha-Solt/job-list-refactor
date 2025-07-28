@@ -1,16 +1,9 @@
 import express from 'express'
 import cors from 'cors'
 import pino from 'pino'
-import path from 'path'
-import { fileURLToPath } from 'url'
 import { jobRoutes } from './routes/jobRoutes.js'
 
 const log = pino({ transport: { target: 'pino-pretty', options: { colorize: true } } })
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-
-// Absoluter Pfad zum Vite-Build-Ordner
-const distPath = path.resolve(__dirname, '../../../frontend/dist')
 
 export const app = express()
 
@@ -22,14 +15,6 @@ app.use(express.json())
 app.use('/api/jobs', jobRoutes)
 
 app.get('/health', (_, res) => res.json({ status: 'ok' }))
-
-/* ────────────── Statische Dateien ausliefern ────────────── */
-app.use(express.static(distPath))
-
-/* ────────────── Fallback für Single-Page-Application ────────────── */
-app.get('*', (req, res) => {
-  res.sendFile(path.join(distPath, 'index.html'))
-})
 
 /* ────────────── 404-Fallback ────────────── */
 app.use((req, _res, next) => {
