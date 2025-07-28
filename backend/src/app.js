@@ -16,6 +16,10 @@ app.use('/api/jobs', jobRoutes)
 
 app.get('/health', (_, res) => res.json({ status: 'ok' }))
 
+app.get('/', (_, res) => {
+  res.json({ service: 'joblist-api', status: 'ok' })
+})
+
 /* ────────────── 404-Fallback ────────────── */
 app.use((req, _res, next) => {
   const err = new Error(`Route ${req.method} ${req.originalUrl} not found`)
