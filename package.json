@@ -14,8 +14,7 @@
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx --max-warnings=0",
     "format": "prettier --write .",
     "type-check": "tsc --noEmit",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
-    "prepare": "husky"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "keywords": [],
   "author": "",
