@@ -11,7 +11,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: CORS_ORIGIN
-        value: https://joblist-ui.onrender.com
+        value: https://job-list-refactor.onrender.com
 
   # ---------- Frontend ----------
   - type: static
@@ -22,4 +22,4 @@ services:
     plan: free
     envVars:
       - key: VITE_API_URL
-        value: https://joblist-api.onrender.com/api
+        value: https://job-list-87ft.onrender.com/api
