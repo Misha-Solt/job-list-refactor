@@ -1,4 +1,3 @@
-// src/ui/ToastProvider.tsx
 import React, {
   createContext,
   useCallback,
@@ -9,7 +8,7 @@ import React, {
   PropsWithChildren,
 } from 'react'
 import { createPortal } from 'react-dom'
-import styles from './ToastProvider.module.css'
+import styles from './toastProvider.module.css'
 
 /* ---------- Typen ---------- */
 
