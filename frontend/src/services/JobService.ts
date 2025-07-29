@@ -1,61 +1,67 @@
+// src/services/JobService.ts
 /**
  * Zentraler Wrapper für alle HTTP-Aufrufe rund um Jobs.
- * Alle Funktionen liefern Promises und reichen Fehler nach oben weiter.
  *
- * Endpunkte (dev):
- *   GET  /api/jobs           – komplette Liste aller Jobs
- *   GET  /api/jobs/stats     – aggregierte Kennzahlen
- *   PATCH /api/jobs/:id/status { status } – Status eines Jobs ändern
+ * Endpunkte:
+ *   GET   /api/jobs?status=…        – komplette oder gefilterte Liste
+ *   GET   /api/jobs/stats           – aggregierte Kennzahlen
+ *   PATCH /api/jobs/:id/status      – Status eines Jobs ändern
  */
 
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { Job, Stats, Status } from '../types/types'
 
-/** Basisadresse für den Backend-API-Server. */
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+/** Basis-URL des API-Servers (Vite-Env oder Fallback). */
+const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3001/api'
 
-/**
- * Lädt die komplette Job-Liste.
- *
- * @returns Promise<Job[]>  – Array mit Job-Objekten vom Server
- * @throws  AxiosError      – wird an Aufrufer weitergereicht
- */
-export const fetchJobs = async (): Promise<Job[]> => {
-  const res = await axios.get<Job[]>(`${API_URL}/jobs`)
-  return res.data
+/* ---------- Typen ---------- */
+
+/** Rückgabe von PATCH /jobs/:id/status – wichtig fürs Undo. */
+export interface PatchStatusResponse {
+  id: number
+  status: Status
+  previousStatus: Status
 }
 
-/**
- * Ruft aggregierte Statistiken ab (z. B. Anzahl pro Status).
- *
- * @returns Promise<Stats>  – Statistiken als Key-Value-Map
- * @throws  AxiosError
- */
-export const fetchStats = async (): Promise<Stats> => {
-  const res = await axios.get<Stats>(`${API_URL}/jobs/stats`)
-  return res.data
-}
+/* ---------- Helper ---------- */
+
+/** Axios-Instanz mit Basis-URL – vereinfacht die Aufrufe. */
+const api = axios.create({
+  baseURL: API_URL,
+  headers: { 'Content-Type': 'application/json' },
+})
+
+/* ---------- API-Funktionen ---------- */
 
 /**
- * Ändert den Status eines einzelnen Jobs.
- *
- * @param id      – ID des Jobs
- * @param status  – neuer Status (Enum `Status`)
- * @returns Promise<Job> – aktualisiertes Job-Objekt vom Server
- *
- * @throws Error – wenn die HTTP-Antwort kein 2xx liefert
+ * Lädt die Job-Liste (optional gefiltert nach Status).
+ * @param status – 'all' | 'pending' | 'in_progress' | 'done'
  */
-export const patchJobStatus = async (id: number, status: Status): Promise<Job> => {
-  const res = await fetch(`${API_URL}/jobs/${id}/status`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ status }),
+export const fetchJobs = async (status: 'all' | Status = 'all'): Promise<Job[]> => {
+  const res = await api.get<Job[]>('/jobs', {
+    params: status === 'all' ? undefined : { status },
   })
+  return res.data
+}
 
-  if (!res.ok) {
-    // Fehlermeldung bewusst deutlich, damit sie im UI angezeigt werden kann
-    throw new Error(`PATCH /jobs/${id}/status failed – HTTP ${res.status}`)
+/** Ruft aggregierte Statistiken ab. */
+export const fetchStats = async (): Promise<Stats> => {
+  const res = await api.get<Stats>('/jobs/stats')
+  return res.data
+}
+
+/**
+ * Ändert den Status eines Jobs.
+ * Liefert `{ id, status, previousStatus }`, womit das UI ein Undo anbieten kann.
+ */
+export const patchJobStatus = async (id: number, status: Status): Promise<PatchStatusResponse> => {
+  try {
+    const res = await api.patch<PatchStatusResponse>(`/jobs/${id}/status`, { status })
+    return res.data
+  } catch (err) {
+    const axiosErr = err as AxiosError
+    const code = axiosErr.response?.status ?? 'NETWORK'
+    // Fehlertext bewusst kurz – UI zeigt ihn in einem Toast an
+    throw new Error(`Status-Update fehlgeschlagen (Code: ${code})`)
   }
-
-  return res.json() as Promise<Job>
 }

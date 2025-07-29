@@ -1,3 +1,4 @@
+// src/pages/JobList/JobList.tsx
 import JobCard from '../../components/JobCard/JobCard'
 import Header from '../../components/Header/Header'
 import Filter from '../../components/Filter/Filter'
@@ -7,6 +8,8 @@ import StatsBar from '../../components/StatsBar/StatsBar'
 import ErrorMessage from '../../components/ErrorMessage/ErrorMessage'
 import Footer from '../../components/Footer/Footer'
 import useJobs from '../../hooks/useJobs'
+import { useCallback } from 'react'
+import type { Status } from '../../types/types'
 
 const JobList = () => {
   const {
@@ -22,7 +25,28 @@ const JobList = () => {
     filteredJobs,
     expandedId,
     handleExpand,
+    updateJobStatusOptimistic,
   } = useJobs()
+
+  // Nächster Status bestimmen
+  const getNext = (current: Status): Status | null =>
+    current === 'pending' ? 'in_progress' : current === 'in_progress' ? 'done' : null
+
+  // Stable Callbacks (optional)
+  const onNext = useCallback(
+    (id: number, current: Status) => {
+      const next = getNext(current)
+      if (next) updateJobStatusOptimistic(id, next, { undoWindowMs: 10_000 })
+    },
+    [updateJobStatusOptimistic],
+  )
+
+  const onReset = useCallback(
+    (id: number) => {
+      updateJobStatusOptimistic(id, 'pending', { undoWindowMs: 10_000 })
+    },
+    [updateJobStatusOptimistic],
+  )
 
   return (
     <div className={styles.container}>
@@ -41,6 +65,8 @@ const JobList = () => {
               job={job}
               expanded={expandedId === job.id}
               onToggle={() => handleExpand(job.id)}
+              onNext={onNext}
+              onReset={onReset}
             />
           ))
         ) : (
@@ -57,4 +83,5 @@ const JobList = () => {
     </div>
   )
 }
+
 export default JobList

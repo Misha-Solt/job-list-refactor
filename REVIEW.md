@@ -1,4 +1,4 @@
-# Statisches Code-Review (v2.0)
+# Statisches Code-Review (v3.0)
 
 ## Legende
 
@@ -99,3 +99,26 @@
 | 4. REVIEW.md v2        | ✅ Abgeschlossen | Dokumentation aktualisiert und ergänzt                          |
 
 💡 Hinweis des Entwicklers: Das aktuelle minimalistische Design wurde bewusst beibehalten, da es funktional ist und eine klare Benutzeroberfläche ohne visuelle Überladung bietet. In zukünftigen Branches können alternative UI-Ansätze erprobt werden.
+
+## Neu in v3.0 – Überblick
+
+- **Optimistische Statuswechsel mit Undo** (Toast + Overlay, polling-sicher).
+- **Neue UI-Steuerung:** Buttons **Reset → pending** und **Next**; Icons über **react-icons/FA6**.
+- **Responsive** (Nur die wichtigsten Punkte).
+- **Toast-Infrastruktur:**
+- **Service/Backend-DTO:** PATCH/POST geben `{ id, status, previousStatus }` zurück; `advanceStatus`-Route.
+- **DX/TS:**
+
+---
+
+## Einsatz von KI-Tools – **Ergänzung v3.0**
+
+| Tool / Modell  | Wofür konkret eingesetzt                                                                                                     | Eigenleistung / Kontrolle                                                 |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| **ChatGPT o3** | **Refactor `useJobs`** (Optimismus/Undo/Overlay, Timer-Abbruch, Stats-Delta), **Backend-DTO & Routes**                       | Architektur & Entscheidungen selbst festgelegt, Code geprüft              |
+| **ChatGPT o3** | **Debugging** (Runtime-/Build-Fehler) und **Deployment auf Render** (Build-Logs, Health-Checks, Startbefehle, Env-Variablen) | Deploy-Strategie & Secrets selbst verwaltet; Rollback manuell verifiziert |
+
+**Deployment (Render):**
+
+- API: https://job-list-87ft.onrender.com/
+- UI: https://job-list-refactor.onrender.com/

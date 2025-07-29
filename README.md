@@ -14,6 +14,9 @@ A simple application for managing jobs.
 
 ---
 
+> _Hinweis:_ Für lokale Entwicklung immer `npm run dev` verwenden  
+> (`nodemon` + `Vite`-HMR). `npm start` ist nur für Prod-Smoke-Tests
+
 ## 2 Nützliche Skripte
 
 | Befehl               | Zweck                                                  |
@@ -61,8 +64,13 @@ A simple application for managing jobs.
 
 ---
 
-> _Hinweis:_ Für lokale Entwicklung immer `npm run dev` verwenden  
-> (`nodemon` + `Vite`-HMR). `npm start` ist nur für Prod-Smoke-Tests
-> und wird von Render benutzt.
+## 6 Live-Demo (Render)
 
-_Live-Demo folgt nach Merge in `feature/change-job-status`._
+**UI (Static Site):** https://job-list-refactor.onrender.com/
+**API (Express):** https://job-list-87ft.onrender.com/
+
+> ⚠️ **Free Tier / Cold Start:** Nach Inaktivität schlafen die Dienste ein.
+> Der **erste Aufruf kann 20–60 Sekunden dauern**, bis UI/API wieder „aufwachen“.
+
+**Deploy-Branch:** Die Live-Seite wird aktuell aus **`feature/change-job-status`** gebaut (nicht `main`).
+Für lokale Reproduktion bitte diesen Branch auschecken.

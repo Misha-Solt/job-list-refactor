@@ -1,0 +1,126 @@
+.container {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 9999;
+  pointer-events: none;
+  width: 100%;
+  max-width: 100%;
+  padding: 12px;
+}
+
+.posBottomRight {
+  right: 0;
+  bottom: 0;
+  align-items: flex-end;
+}
+.posBottomCenter {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  align-items: center;
+}
+.posTopRight {
+  right: 0;
+  top: 0;
+  align-items: flex-end;
+}
+.posTopCenter {
+  left: 0;
+  right: 0;
+  top: 0;
+  align-items: center;
+}
+
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: min(680px, 94vw);
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--bg-highlight);
+  color: var(--text-primary);
+  border: 1px solid var(--color-muted);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.message {
+  flex: 1;
+  line-height: 1.45;
+  font-size: 0.98rem;
+}
+
+.action {
+  border: 1px solid var(--color-muted);
+  background: var(--color-all);
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--text-light);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.action:hover {
+  filter: brightness(0.98);
+}
+
+.action:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.35);
+}
+
+.close {
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 6px 8px;
+}
+
+.close:hover {
+  color: var(--text-primary);
+}
+
+.progress {
+  position: absolute;
+  left: 6px;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--color-all);
+  transform-origin: left;
+  animation: toast-progress var(--toast-duration, 4000ms) linear forwards;
+}
+
+@keyframes toast-progress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .toast {
+    animation: toast-enter 160ms ease-out;
+  }
+  @keyframes toast-enter {
+    from {
+      transform: translateY(6px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}

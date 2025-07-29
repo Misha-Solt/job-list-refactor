@@ -1,18 +1,42 @@
 import { Router } from 'express'
-import { getAll, updateStatus, nextStatus } from '../services/jobService.js'
+import { getAll, updateStatus, advanceStatus } from '../services/jobService.js'
 import { getStats } from '../services/statsService.js'
+import { STATUSES, isValidStatus } from '../services/constants.js'
 
 export const jobRoutes = Router()
 
+/* ---------- Hilfsfunktionen ---------- */
+
+/** Liest numerische :id; gibt 400 zurück, wenn ungültig. */
+const getNumericIdOr400 = (req, res) => {
+  const id = Number(req.params.id)
+  if (!Number.isInteger(id)) {
+    res.status(400).json({ error: 'INVALID_ID' })
+    return null
+  }
+  return id
+}
+
+/** Prüft den Status-Filter (?status=...), erlaubt auch "all". */
+const assertValidStatusFilterOr400 = (req, res) => {
+  const v = req.query.status ?? 'all'
+  if (v === 'all' || isValidStatus(v)) return v
+  res.status(400).json({ error: 'INVALID_STATUS_PARAM', allowed: ['all', ...STATUSES] })
+  return null
+}
+
+/* ---------- Routen ---------- */
+
 /**
- * GET /api/jobs?status=[all|pending|in-progress|done]
+ * GET /api/jobs?status=[all|pending|in_progress|done]
  * Liefert komplette oder gefilterte Liste.
+ * Hinweis: KEINE Normalisierung – es werden nur exakt obige Werte akzeptiert.
  */
 jobRoutes.get('/', async (req, res, next) => {
   try {
-    const status = req.query.status ?? 'all'
+    const status = assertValidStatusFilterOr400(req, res)
+    if (status == null) return
     const jobs = await getAll(status)
-
     res.json(jobs)
   } catch (err) {
     next(err)
@@ -21,33 +45,39 @@ jobRoutes.get('/', async (req, res, next) => {
 
 /**
  * PATCH /api/jobs/:id/status
- * Erwartet { "status": "<gültiger Status>" } im Body.
+ * Erwartet Body: { "status": "<gültiger Status>" }
+ * Antwort: { id, status, previousStatus }
+ * Hinweis: KEINE Normalisierung – Body muss exakt einen gültigen Status liefern.
  */
 jobRoutes.patch('/:id/status', async (req, res, next) => {
   try {
-    const id = Number(req.params.id)
-    const { status } = req.body // z. B. "in_progress"
+    const id = getNumericIdOr400(req, res)
+    if (id == null) return
+
+    const status = req.body?.status
+    if (!isValidStatus(status)) {
+      return res.status(400).json({ error: 'INVALID_STATUS', allowed: STATUSES })
+    }
 
     const updated = await updateStatus(id, status)
     res.json(updated)
   } catch (err) {
-    next(err) // leitet 400/404 weiter an Error-Handler
+    next(err) // leitet 400/404 usw. an den zentralen Error-Handler weiter
   }
 })
 
 /**
  * POST /api/jobs/:id/next
  * Convenience-Route: setzt Status automatisch auf den „nächsten“
- * (pending → in-progress → done).
+ * (pending → in_progress → done).
+ * Antwort: { id, status, previousStatus }
  */
 jobRoutes.post('/:id/next', async (req, res, next) => {
   try {
-    const id = Number(req.params.id)
+    const id = getNumericIdOr400(req, res)
+    if (id == null) return
 
-    const [job] = await getAll('all').then((js) => js.filter((j) => j.id === id))
-    if (!job) throw new Error('NOT_FOUND')
-
-    const updated = await updateStatus(id, nextStatus(job.status))
+    const updated = await advanceStatus(id)
     res.json(updated)
   } catch (err) {
     next(err)
@@ -58,8 +88,7 @@ jobRoutes.post('/:id/next', async (req, res, next) => {
  * GET /api/jobs/stats
  * Liefert Objekt mit Anzahl pro Status.
  */
-
-jobRoutes.get('/stats', async (req, res, next) => {
+jobRoutes.get('/stats', async (_req, res, next) => {
   try {
     const stats = await getStats()
     res.json(stats)

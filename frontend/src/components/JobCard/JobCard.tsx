@@ -1,17 +1,20 @@
+// src/components/JobCard/JobCard.tsx
 import styles from './jobCard.module.css'
-import { Job } from '../../types/types'
+import { Job, Status } from '../../types/types'
 import { getStatusColor } from '../../utils/StatUtil'
-import { Status } from '../../types/types'
-import useJobs from '../../hooks/useJobs'
 import moment from 'moment'
+import { FaArrowRightLong, FaArrowRotateLeft } from 'react-icons/fa6'
 
 interface Props {
   job: Job
   expanded: boolean
   onToggle: () => void
+  onNext: (id: number, current: Status) => void
+  onReset: (id: number) => void
 }
 
-const JobCard = ({ job, expanded, onToggle }: Props) => {
+const JobCard = ({ job, expanded, onToggle, onNext, onReset }: Props) => {
+  /* DE-Datum */
   const formatGermanDate = (dateStr: string) => moment(dateStr).format('DD.MM.YYYY')
 
   const statusLabels: Record<Status, string> = {
@@ -20,28 +23,17 @@ const JobCard = ({ job, expanded, onToggle }: Props) => {
     done: 'Abgeschlossen',
   }
 
-  // Liefert den nächsten Status in der Pipeline oder `null`, wenn Ende erreicht.
-  const nextStatus = (current: Status): Status | null => {
-    switch (current) {
-      case 'pending':
-        return 'in_progress'
-      case 'in_progress':
-        return 'done'
-      default:
-        return null
-    }
+  const hasNext = job.status === 'pending' || job.status === 'in_progress'
+  const canReset = job.status !== 'pending'
+
+  const handleNextClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+    onNext(job.id, job.status)
   }
 
-  const { updateJobStatus } = useJobs()
-
-  /**
-   * Klick auf „Status ändern“ → nächster Status → API-Patch.
-   * `stopPropagation()` verhindert, dass der Klick gleichzeitig die Card auf- oder zuklappt.
-   */
-  const handleStatusClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleResetClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
-    const next = nextStatus(job.status)
-    if (next) updateJobStatus(job.id, next)
+    onReset(job.id)
   }
 
   return (
@@ -57,13 +49,30 @@ const JobCard = ({ job, expanded, onToggle }: Props) => {
           </p>
         </div>
 
-        <div className={styles.statusContainer}>
+        <div className={styles.statusRow}>
+          {canReset && (
+            <button
+              className={`${styles.iconBtn} ${styles.iconBtnReset}`}
+              onClick={handleResetClick}
+              title="Auf Ausstehend zurücksetzen"
+              aria-label="Status zurücksetzen auf Ausstehend"
+            >
+              <FaArrowRotateLeft aria-hidden size={18} />
+            </button>
+          )}
+
           <div className={styles.status} style={{ backgroundColor: getStatusColor(job.status) }}>
             {statusLabels[job.status]}
           </div>
-          {nextStatus(job.status) && (
-            <button className={styles.advanceBtn} onClick={handleStatusClick}>
-              Status ändern
+
+          {hasNext && (
+            <button
+              className={`${styles.iconBtn} ${styles.iconBtnNext}`}
+              onClick={handleNextClick}
+              title="Next Status"
+              aria-label="Next Status"
+            >
+              <FaArrowRightLong aria-hidden size={18} />
             </button>
           )}
         </div>

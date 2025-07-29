@@ -1,15 +1,62 @@
 .filterWrapper {
-  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
   margin: 20px 0;
 }
 
 .button {
   padding: 10px 20px;
-  margin: 0 5px;
   color: var(--text-light);
   border: none;
   cursor: pointer;
   background-color: var(--color-muted);
-  transition: background-color 0.2s ease;
-  border-radius: 6px;
+  transition:
+    background-color 0.2s ease,
+    transform 0.05s ease,
+    box-shadow 0.2s ease;
+  border-radius: 999px; 
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1;
 }
+
+.button:hover {
+  filter: brightness(0.98);
+}
+
+.button:active {
+  transform: translateY(1px);
+}
+
+
+.selected {
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.06);
+}
+
+
+.button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.35);
+}
+
+
+@media (max-width: 375px) {
+  .filterWrapper {
+   
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 0 4px;
+  }
+
+  .button {
+    width: 100%;
+    padding: 8px 12px; 
+    font-size: 0.9rem;
+    border-radius: 10px; 
+    text-align: center;
+  }
+}
+

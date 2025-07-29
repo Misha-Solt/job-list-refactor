@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { fetchJobs, fetchStats, patchJobStatus } from '../services/JobService'
 import { Job, Stats, Status } from '../types/types'
 import isEqual from 'lodash.isequal'
+import { useToast } from '../ui/ToastProvider'
 
 /**
  * Intervall in Millisekunden, nach dem die Daten automatisch aktualisiert werden.
@@ -13,7 +14,8 @@ const UPDATE_INTERVAL = 5_000
  * Alle Seiteneffekte sind „hook-konform“ – eslint:react-hooks/exhaustive-deps bleibt ruhig.
  */
 const useJobs = () => {
-  /* ---------- State ---------- */
+
+  /* ---------- States ---------- */
   const [jobs, setJobs] = useState<Job[]>([])
   const [stats, setStats] = useState<Stats>({})
   const [loading, setLoading] = useState(false)
@@ -25,17 +27,36 @@ const useJobs = () => {
   const [apiCallCount, setApiCallCount] = useState(0) // Anzahl API-Aufrufe
   const [expandedId, setExpandedId] = useState<number | null>(null) // aufgeklappte Karte
 
+  /* ---------- Optimismus/Undo: Overlay & Pending ---------- */
+  // Overlay: lokale Status-Überschreibungen, bis Undo-Fenster abläuft
+  const [overlayStatus, setOverlayStatus] = useState<Record<number, Status>>({})
+  // Pending: speichert Vorzustand + Timer pro Job
+  const pendingRef = useRef<Record<number, { prev: Status; timer: ReturnType<typeof setTimeout> }>>(
+    {},
+  )
+  // Referenz auf Overlay für loadData (keine Hook-Dependencies → stabil)
+  const overlayRef = useRef<Record<number, Status>>({})
+  useEffect(() => {
+    overlayRef.current = overlayStatus
+  }, [overlayStatus])
+
+  const { show } = useToast()
+
   /* ---------- 1. stabile Funktion zum Nachladen der Daten ---------- */
   const loadData = useCallback(async () => {
     setLoading(true)
     setApiCallCount((c) => c + 1)
 
     try {
-      // beide Requests parallel, spart Zeit
-      const [freshJobs, freshStats] = await Promise.all([fetchJobs(), fetchStats()])
+       const [freshJobs, freshStats] = await Promise.all([fetchJobs(), fetchStats()])
 
-      // nur setzen, wenn sich etwas wirklich geändert hat
-      setJobs((prev) => (isEqual(prev, freshJobs) ? prev : freshJobs))
+      // Overlay anwenden, damit Auto-Refresh den Optimismus nicht „wegblinkt“
+      const merged = freshJobs.map((j) => {
+        const ov = overlayRef.current[j.id]
+        return ov ? { ...j, status: ov } : j
+      })
+
+      setJobs((prev) => (isEqual(prev, merged) ? prev : merged))
       setStats((prev) => (isEqual(prev, freshStats) ? prev : freshStats))
 
       setLastUpdate(new Date())
@@ -43,11 +64,11 @@ const useJobs = () => {
     } catch (err: any) {
       setJobs([])
       setStats({})
-      setError(err.message ?? 'Unbekannter Fehler beim Laden')
+      setError(err?.message ?? 'Unbekannter Fehler beim Laden')
     } finally {
       setLoading(false)
     }
-  }, []) // ← kein Dependency-Eintrag → Funktion bleibt stabil
+  }, [])
 
   /* ---------- 2. Effekt: initial + intervallbasiertes Nachladen ---------- */
   useEffect(() => {
@@ -74,7 +95,8 @@ const useJobs = () => {
   }
 
   /**
-   * Status eines Jobs via API ändern und lokales State aktualisieren.
+   * Nicht-optimistische Statusänderung (beibehaltener Legacy-Weg).
+   * Passt auf neuen Rückgabetyp { id, status, previousStatus } an.
    */
   const updateJobStatus = async (id: number, newStatus: Status) => {
     try {
@@ -92,6 +114,83 @@ const useJobs = () => {
     }
   }
 
+  /**
+   * Optimistische Statusänderung mit Undo-Fenster.
+   * - UI wechselt sofort zum neuen Status
+   * - Server wird gepatcht
+   * - Toast zeigt „Rückgängig“ für undoWindowMs
+   * - Auto-Refresh respektiert Overlay bis zur Finalisierung
+   */
+  const updateJobStatusOptimistic = async (
+    id: number,
+    newStatus: Status,
+    opts?: { undoWindowMs?: number },
+  ) => {
+    const undoWindowMs = opts?.undoWindowMs ?? 10_000
+
+    // Aktuellen Job + Vorstatus ermitteln
+    const current = jobs.find((j) => j.id === id)
+    if (!current) return
+    const prev = current.status
+
+    // 1) Sofortiges UI-Update (Overlay + lokale Liste)
+    setOverlayStatus((m) => ({ ...m, [id]: newStatus }))
+    setJobs((arr) => arr.map((j) => (j.id === id ? { ...j, status: newStatus } : j)))
+
+    try {
+      // 2) Server patchen
+      await patchJobStatus(id, newStatus)
+    } catch (err) {
+      // Fehler → harter Rollback
+      setOverlayStatus(({ [id]: _, ...rest }) => rest)
+      setJobs((arr) => arr.map((j) => (j.id === id ? { ...j, status: prev } : j)))
+      setError('Status konnte nicht geändert werden (Netzwerk/Serverfehler)')
+      show({ message: 'Änderung fehlgeschlagen. Rückgängig gemacht.' })
+      return
+    }
+
+    // 3) Undo-Fenster starten (Finalisierung nach Ablauf)
+    const finalize = async () => {
+      delete pendingRef.current[id]
+      // Overlay entfernen → künftiger Auto-Refresh zeigt Serverzustand
+      setOverlayStatus(({ [id]: _, ...rest }) => rest)
+      // Statistiken frisch holen (optional, aber sinnvoll)
+      try {
+        const freshStats = await fetchStats()
+        setStats((prev) => (isEqual(prev, freshStats) ? prev : freshStats))
+      } catch {}
+    }
+
+    const timer = setTimeout(finalize, undoWindowMs)
+    pendingRef.current[id] = { prev, timer }
+
+    // 4) Toast mit Undo-Aktion
+    show({
+      message: 'Status aktualisiert.',
+      actionLabel: 'Stornieren',
+      duration: undoWindowMs,
+      onAction: async () => {
+        const pending = pendingRef.current[id]
+        if (!pending) return
+        clearTimeout(pending.timer)
+
+        try {
+          await patchJobStatus(id, pending.prev)
+        } finally {
+          // Lokalen Zustand sofort zurückdrehen
+          setOverlayStatus(({ [id]: _, ...rest }) => rest)
+          setJobs((arr) => arr.map((j) => (j.id === id ? { ...j, status: pending.prev } : j)))
+          delete pendingRef.current[id]
+          // Statistiken frisch holen
+          try {
+            const freshStats = await fetchStats()
+            setStats((prev) => (isEqual(prev, freshStats) ? prev : freshStats))
+          } catch {}
+        }
+      },
+    })
+  }
+
   /* ---------- 5. Rückgabeobjekt des Hooks ---------- */
   return {
     jobs,
@@ -107,6 +206,7 @@ const useJobs = () => {
     expandedId,
     handleExpand,
     updateJobStatus,
+    updateJobStatusOptimistic,
   }
 }
 

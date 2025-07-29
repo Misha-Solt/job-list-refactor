@@ -1,10 +1,14 @@
 import { Outlet } from 'react-router-dom'
+import { ToastProvider } from './ui/ToastProvider'
 
-function App() {
+const App = () => {
   return (
-    <div>
-      <Outlet />
-    </div>
+    // Optionen: 'bottom-right' | 'bottom-center' | 'top-right' | 'top-center'
+    <ToastProvider placement="top-center">
+      <div>
+        <Outlet />
+      </div>
+    </ToastProvider>
   )
 }
 
