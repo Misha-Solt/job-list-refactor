@@ -1,5 +1,8 @@
+/* ===== Licht (Default) ===== */
 :root {
-  /* Status colors (buttons, badges) */
+  color-scheme: light;
+
+  /* Statusfarben */
   --color-all: #007bff;
   --color-ausstehend: #ffc107;
   --color-inBearbeitung: #17a2b8;
@@ -12,12 +15,51 @@
   --text-primary: #333;
   --text-secondary: #666;
   --text-light: #fff;
-  --text-error: red;
+  --text-error: #d32f2f;
 
-  /* Backgrounds */
+  /* Hintergründe */
   --bg-primary: #f0f0f0;
   --bg-secondary: #f9f9f9;
   --bg-highlight: #ffffff;
   --bg-alternate: #f5f5f5;
   --bg-error: #ffeeee;
+
+  /* Code-Block */
+  --code-bg: #0f111a;
+  --code-fg: #d9e0ee;
+  --code-border: rgba(255, 255, 255, 0.08);
+}
+
+/* ===== Dunkel ===== */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-all: #63a5ff;
+  --color-ausstehend: #ffcf5a;
+  --color-inBearbeitung: #4fc3d6;
+  --color-abgeschlossen: #5cd07a;
+
+  --color-muted: #3a3a3a;
+
+  --text-primary: #e6e6e6;
+  --text-secondary: #a7a7a7;
+  --text-light: #111;
+  --text-error: #ff6b6b;
+
+  --bg-primary: #121212;
+  --bg-secondary: #181a1b;
+  --bg-highlight: #1f2123;
+  --bg-alternate: #222426;
+  --bg-error: #3b1f1f;
+
+  --code-bg: #0b0d10;
+  --code-fg: #d7e6f3;
+  --code-border: rgba(255, 255, 255, 0.06);
+}
+
+/* System-Default: wenn keine manuelle Wahl existiert */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+  }
 }

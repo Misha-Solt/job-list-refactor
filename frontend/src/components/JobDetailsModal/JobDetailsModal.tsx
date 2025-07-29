@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactModal from 'react-modal'
-import styles from './JobDetailsModal.module.css'
+import styles from './jobDetailsModal.module.css'
 import { Job, Status } from '../../types/types'
 import { getStatusColor } from '../../utils/StatUtil'
 import { FaHashtag, FaCalendarAlt, FaEuroSign } from 'react-icons/fa'
