@@ -1,4 +1,3 @@
-// src/pages/JobList/JobList.tsx
 import JobCard from '../../components/JobCard/JobCard'
 import Header from '../../components/Header/Header'
 import Filter from '../../components/Filter/Filter'
@@ -10,6 +9,7 @@ import Footer from '../../components/Footer/Footer'
 import useJobs from '../../hooks/useJobs'
 import { useCallback } from 'react'
 import type { Status } from '../../types/types'
+import JobDetailsModal from '../../components/JobDetailsModal/JobDetailsModal'
 
 const JobList = () => {
   const {
@@ -23,16 +23,21 @@ const JobList = () => {
     refreshCount,
     apiCallCount,
     filteredJobs,
-    expandedId,
-    handleExpand,
+
+    // Modal aus useJobs
+    detailsId,
+    selectedJob,
+    openDetails,
+    closeDetails,
+
+    // Status API
     updateJobStatusOptimistic,
   } = useJobs()
 
   // Nächster Status bestimmen
-  const getNext = (current: Status): Status | null =>
+  const getNext = (current: Status) =>
     current === 'pending' ? 'in_progress' : current === 'in_progress' ? 'done' : null
 
-  // Stable Callbacks (optional)
   const onNext = useCallback(
     (id: number, current: Status) => {
       const next = getNext(current)
@@ -63,8 +68,7 @@ const JobList = () => {
             <JobCard
               key={job.id}
               job={job}
-              expanded={expandedId === job.id}
-              onToggle={() => handleExpand(job.id)}
+              onOpenDetails={openDetails}
               onNext={onNext}
               onReset={onReset}
             />
@@ -80,6 +84,11 @@ const JobList = () => {
         selectedFilter={selectedFilter}
         lastUpdate={lastUpdate}
       />
+
+      {/* Eine einzige Modal-Instanz */}
+      {detailsId != null && selectedJob && (
+        <JobDetailsModal isOpen={true} onRequestClose={closeDetails} job={selectedJob} />
+      )}
     </div>
   )
 }

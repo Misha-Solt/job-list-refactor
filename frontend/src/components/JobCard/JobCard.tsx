@@ -1,20 +1,17 @@
-// src/components/JobCard/JobCard.tsx
 import styles from './jobCard.module.css'
 import { Job, Status } from '../../types/types'
 import { getStatusColor } from '../../utils/StatUtil'
 import moment from 'moment'
-import { FaArrowRightLong, FaArrowRotateLeft } from 'react-icons/fa6'
+import { FaArrowRight, FaArrowRotateLeft } from 'react-icons/fa6'
 
 interface Props {
   job: Job
-  expanded: boolean
-  onToggle: () => void
+  onOpenDetails: (id: number) => void
   onNext: (id: number, current: Status) => void
   onReset: (id: number) => void
 }
 
-const JobCard = ({ job, expanded, onToggle, onNext, onReset }: Props) => {
-  /* DE-Datum */
+const JobCard = ({ job, onOpenDetails, onNext, onReset }: Props) => {
   const formatGermanDate = (dateStr: string) => moment(dateStr).format('DD.MM.YYYY')
 
   const statusLabels: Record<Status, string> = {
@@ -27,17 +24,19 @@ const JobCard = ({ job, expanded, onToggle, onNext, onReset }: Props) => {
   const canReset = job.status !== 'pending'
 
   const handleNextClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation()
+    e.stopPropagation() // verhindert Öffnen des Modals
     onNext(job.id, job.status)
   }
 
   const handleResetClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation()
+    e.stopPropagation() // verhindert Öffnen des Modals
     onReset(job.id)
   }
 
+  const handleOpen = () => onOpenDetails(job.id)
+
   return (
-    <div className={styles.cardContainer} onClick={onToggle}>
+    <div className={styles.cardContainer} onClick={handleOpen}>
       <div className={styles.card}>
         <div className={styles.info}>
           <h3 className={styles.title}>{job.title}</h3>
@@ -72,7 +71,7 @@ const JobCard = ({ job, expanded, onToggle, onNext, onReset }: Props) => {
               title="Next Status"
               aria-label="Next Status"
             >
-              <FaArrowRightLong aria-hidden size={18} />
+              <FaArrowRight aria-hidden size={18} />
             </button>
           )}
         </div>
@@ -81,13 +80,6 @@ const JobCard = ({ job, expanded, onToggle, onNext, onReset }: Props) => {
           <div className={styles.notes}>
             <strong>Notiz: </strong>
             {job.notes}
-          </div>
-        )}
-
-        {expanded && (
-          <div className={styles.details}>
-            <h4>Alle Daten:</h4>
-            <pre>{JSON.stringify(job, null, 2)}</pre>
           </div>
         )}
       </div>
