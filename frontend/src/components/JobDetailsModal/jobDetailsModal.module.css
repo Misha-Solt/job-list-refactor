@@ -143,7 +143,7 @@
 
 @media (max-width: 480px) {
   .modalContent {
-    width: 96vw;
+    width: 90vw;
     padding: 12px 12px;
   }
   .grid {

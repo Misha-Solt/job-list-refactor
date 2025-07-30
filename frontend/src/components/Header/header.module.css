@@ -21,11 +21,15 @@
   margin-top: 10px;
   font-size: 14px;
   color: var(--text-primary);
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 
 .meta span + span {
   margin-left: 20px;
 }
+
 .btnContainer {
   display: inline-flex;
   gap: 8px;
@@ -70,4 +74,18 @@
 }
 .off {
   opacity: 0.9;
+}
+
+@media (max-width: 480px) {
+  .header{
+    margin-top: 30px;
+  }
+  
+  .meta {
+    display: flexbox;
+    flex-direction: column;
+  }
+  .meta span {
+    margin: 6px;
+  }
 }
