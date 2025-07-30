@@ -66,6 +66,7 @@
   align-items: center;
   justify-content: center;
   min-height: 20px;
+  min-width: 140px;
 }
 
 .iconBtn {

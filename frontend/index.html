@@ -1,15 +1,30 @@
 <!DOCTYPE html>
 <html lang="de">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Aufträge-Liste</title>
-    <!-- Eigenes Favicon einbinden -->
-    <link rel="icon" href="/favicon.svg" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <!-- Einstiegspunkt für React/Vite -->
-    <script type="module" src="/src/index.tsx"></script>
-  </body>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Aufträge‑Liste</title>
+  <meta name="description"
+    content="Übersicht und Verwaltung von Aufträgen: Status wechseln, Details einsehen, Auto‑Refresh steuern." />
+  <meta name="robots" content="index,follow" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0c0f" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon.png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="dns-prefetch" href="https://job-list-87ft.onrender.com" />
+  <link rel="preconnect" href="https://job-list-87ft.onrender.com" crossorigin />
+</head>
+
+<body>
+  <noscript>
+    Diese Anwendung benötigt JavaScript. Bitte aktivieren Sie JavaScript in Ihrem Browser.
+  </noscript>
+  <div id="root"></div>
+  <script type="module" src="/src/index.tsx"></script>
+</body>
+
 </html>
