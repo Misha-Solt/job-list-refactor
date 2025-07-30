@@ -139,3 +139,11 @@
 
 - API: https://job-list-87ft.onrender.com/
 - UI: https://job-list-refactor.onrender.com/
+
+## Lighthouse – Ergebnis (30.07.2025)
+
+![Lighthouse Screenshot](docs/lighthouse-2025-07-30.png)
+
+**Mess-Setup:** Chrome (Inkognito), Prod‑Build, Rendering über Render.
+
+**Mobil (Portrait):** UI bleibt gut bedienbar.

@@ -74,3 +74,8 @@ A simple application for managing jobs.
 
 **Deploy-Branch:** Die Live-Seite wird aktuell aus **`feature/change-job-status`** gebaut (nicht `main`).
 Für lokale Reproduktion bitte diesen Branch auschecken.
+
+> **Lighthouse (Stand: 30.07.2025)**  
+> Performance **95** · Accessibility **93** · Best Practices **96** · SEO **100**  
+> Getestet im Prod‑Build. Werte können je nach Gerät/Netz leicht variieren.  
+> **Hinweis:** Bitte auch mobil im **Portrait** prüfen.
