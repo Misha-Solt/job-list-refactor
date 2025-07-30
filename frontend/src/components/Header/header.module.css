@@ -1,7 +1,8 @@
 .header {
   background-color: var(--bg-primary);
-  padding: 20px;
   text-align: center;
+  padding-top: 8px;
+  border-radius: 8px;
 }
 
 .title {
@@ -16,12 +17,57 @@
   font-size: 14px;
 }
 
-.stats {
+.meta {
   margin-top: 10px;
   font-size: 14px;
   color: var(--text-primary);
 }
 
-.stats span + span {
+.meta span + span {
   margin-left: 20px;
+}
+.btnContainer {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.ctrlBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  margin: 18px 12px;
+  border: 1px solid var(--color-muted);
+  border-radius: 999px;
+  background: var(--bg-alternate);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition:
+    filter 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.05s ease;
+}
+.ctrlBtn:hover {
+  filter: brightness(1.05);
+  border-color: var(--color-all);
+}
+.ctrlBtn:active {
+  transform: translateY(1px);
+}
+.ctrlBtn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.35);
+}
+
+.ctrlLabel {
+  font-size: 0.85rem;
+}
+
+/* optische Zustände */
+.on {
+  background: var(--bg-primary);
+}
+.off {
+  opacity: 0.9;
 }

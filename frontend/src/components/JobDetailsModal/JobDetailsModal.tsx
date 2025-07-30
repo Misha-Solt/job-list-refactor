@@ -3,20 +3,23 @@ import ReactModal from 'react-modal'
 import styles from './jobDetailsModal.module.css'
 import { Job, Status } from '../../types/types'
 import { getStatusColor } from '../../utils/StatUtil'
-import { FaHashtag, FaCalendarAlt, FaEuroSign } from 'react-icons/fa'
+import moment from 'moment'
+import { FaHashtag, FaCalendarCheck, FaEuroSign, FaXmark } from 'react-icons/fa6'
 
-/* ---------- Hilfsfunktionen (lokal, ohne weitere Abhängigkeiten) ---------- */
+/* ---------- Hilfsfunktionen ---------- */
 
-// Deutsche Datumsausgabe, robust gegen leere Werte
-const fmtDate = (iso?: string) => (iso ? new Date(iso).toLocaleDateString('de-DE') : '—')
+// Strikter ISO-Parse + fixes Format "DD.MM.YYYY" (mit führenden Nullen)
+const fmtDate = (iso?: string) => {
+  if (!iso) return '—'
+  const m = moment(iso, moment.ISO_8601, true) // strict
+  return m.isValid() ? m.format('DD.MM.YYYY') : '—'
+}
 
-// Euro-Betrag in de-DE (ohne Annahmen über MWSt)
 const fmtMoney = (v?: number) =>
   typeof v === 'number' && Number.isFinite(v)
     ? new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(v)
     : '—'
 
-// Lesbares Label für Status
 const statusLabel: Record<Status, string> = {
   pending: 'Ausstehend',
   in_progress: 'In Bearbeitung',
@@ -29,14 +32,6 @@ type Props = {
   job: Job
 }
 
-/**
- * Modal zur klaren, zugänglichen Darstellung einer Job-Entität.
- * - Kopf: Titel + farbiger Status-Badge + schließen
- * - Chips: kompakte Attribute (ID, Fällig, Preis)
- * - Details: 2-Spalten-Grid mit Schlüsselwerten
- * - Notiz (wenn vorhanden)
- * - Rohdaten: optional aufklappbar für Transparenz/Debug
- */
 const JobDetailsModal: React.FC<Props> = ({ isOpen, onRequestClose, job }) => {
   const statusColor = getStatusColor(job.status)
 
@@ -65,8 +60,13 @@ const JobDetailsModal: React.FC<Props> = ({ isOpen, onRequestClose, job }) => {
           {statusLabel[job.status]}
         </div>
 
-        <button className={styles.closeBtn} onClick={onRequestClose} aria-label="Schließen">
-          ×
+        <button
+          className={styles.closeBtn}
+          onClick={onRequestClose}
+          aria-label="Schließen"
+          title="Schließen"
+        >
+          <FaXmark aria-hidden className={styles.closeIcon} />
         </button>
       </header>
 
@@ -78,7 +78,7 @@ const JobDetailsModal: React.FC<Props> = ({ isOpen, onRequestClose, job }) => {
         </div>
 
         <div className={styles.chip} title={`Fällig am ${fmtDate(job.due)}`}>
-          <FaCalendarAlt aria-hidden className={styles.chipIcon} />
+          <FaCalendarCheck aria-hidden className={styles.chipIcon} />
           <span>{fmtDate(job.due)}</span>
         </div>
 
@@ -112,7 +112,6 @@ const JobDetailsModal: React.FC<Props> = ({ isOpen, onRequestClose, job }) => {
           <div className={styles.value}>{fmtDate(job.due)}</div>
         </div>
 
-        {/* Optionale Felder elegant abfangen */}
         {'price' in job && (
           <div className={styles.item}>
             <div className={styles.key}>Preis</div>
@@ -138,12 +137,12 @@ const JobDetailsModal: React.FC<Props> = ({ isOpen, onRequestClose, job }) => {
       {/* ---------- Notizen ---------- */}
       {job.notes && (
         <section className={styles.notes}>
-          <div className={styles.notesLabel}>Notiz</div>
+          <div className={styles.notesLabel}>Notiz:</div>
           <div className={styles.notesBody}>{job.notes}</div>
         </section>
       )}
 
-      {/* ---------- Rohdaten (optional, aufklappbar) ---------- */}
+      {/* ---------- Rohdaten (aufklappbar) ---------- */}
       <section className={styles.raw}>
         <details>
           <summary>Rohdaten (JSON)</summary>

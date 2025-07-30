@@ -1,4 +1,4 @@
-# Statisches Code-Review (v3.0)
+# Statisches Code-Review (v4.0 final)
 
 ## Legende
 
@@ -117,6 +117,23 @@
 | -------------- | ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
 | **ChatGPT o3** | **Refactor `useJobs`** (Optimismus/Undo/Overlay, Timer-Abbruch, Stats-Delta), **Backend-DTO & Routes**                       | Architektur & Entscheidungen selbst festgelegt, Code geprüft              |
 | **ChatGPT o3** | **Debugging** (Runtime-/Build-Fehler) und **Deployment auf Render** (Build-Logs, Health-Checks, Startbefehle, Env-Variablen) | Deploy-Strategie & Secrets selbst verwaltet; Rollback manuell verifiziert |
+
+## Neu in v4.0 – Überblick
+
+- **Theme‑System (Light/Dark/System)**
+- **ThemeToggle-Position**
+- **Job‑Details als Modal (Feinschliff)**
+- **Auto‑Refresh‑Steuerung**
+- **Build/Deps**
+
+---
+
+## Einsatz von KI-Tools – **Ergänzung v4.0**
+
+| Tool / Modell  | Wofür konkret eingesetzt                                                                     | Eigenleistung / Kontrolle                  |
+| -------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| **ChatGPT o3** | **Modal‑UX‑Fixes** (JSON‑Disclosure, Accessibility)                                          | manuell verifiziert                        |
+| **ChatGPT o3** | **useJobs‑Anpassungen** (Auto‑Refresh‑Toggle, **Pause bei Modal**, Intervall‑Abhängigkeiten) | Architektur festgelegt, Code‑Diffs geprüft |
 
 **Deployment (Render):**
 

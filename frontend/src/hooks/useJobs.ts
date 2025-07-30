@@ -4,22 +4,23 @@ import { Job, Stats, Status } from '../types/types'
 import isEqual from 'lodash.isequal'
 import { useToast } from '../ui/ToastProvider'
 
+/** Intervall (ms) für Auto-Refresh */
 const UPDATE_INTERVAL = 5_000
 
 const useJobs = () => {
-  /* ---------- States ---------- */
+  /* ---------- Basis-States ---------- */
   const [jobs, setJobs] = useState<Job[]>([])
   const [stats, setStats] = useState<Stats>({})
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const [selectedFilter, setSelectedFilter] = useState('') // aktiver Statusfilter
+  const [selectedFilter, setSelectedFilter] = useState('') // aktiver Status-Filter
   const [lastUpdate, setLastUpdate] = useState(new Date()) // Zeitstempel fürs UI
-  const [refreshCount, setRefreshCount] = useState(0) // Auto-Refresh-Zähler
-  const [apiCallCount, setApiCallCount] = useState(0) // API-Call-Zähler
+  const [refreshCount, setRefreshCount] = useState(0) // Anzahl Auto-/Manueller Refreshes
+  const [apiCallCount, setApiCallCount] = useState(0) // Anzahl API-Aufrufe (fetchJobs/fetchStats)
 
-  /* ---------- Modal-Steuerung  ---------- */
-  const [detailsId, setDetailsId] = useState<number | null>(null) // aktuell geöffneter Job im Modal
+  /* ---------- Details-Modal (ersetzt früheren Accordion-State) ---------- */
+  const [detailsId, setDetailsId] = useState<number | null>(null)
   const openDetails = (id: number) => setDetailsId(id)
   const closeDetails = () => setDetailsId(null)
   const selectedJob = useMemo<Job | null>(
@@ -27,7 +28,24 @@ const useJobs = () => {
     [detailsId, jobs],
   )
 
+  /* ---------- Auto-Refresh: Ein/Aus + Persistenz ---------- */
+  // Default = true, wird in localStorage persistiert
+  const [autoRefreshEnabled, setAutoRefreshEnabled] = useState<boolean>(() => {
+    try {
+      const raw = localStorage.getItem('autoRefreshEnabled')
+      return raw == null ? true : JSON.parse(raw)
+    } catch {
+      return true
+    }
+  })
+  useEffect(() => {
+    try {
+      localStorage.setItem('autoRefreshEnabled', JSON.stringify(autoRefreshEnabled))
+    } catch {}
+  }, [autoRefreshEnabled])
+
   /* ---------- Optimismus/Undo: Overlay & Pending ---------- */
+  // Overlay hält lokale Statusüberschreibungen bis zur Finalisierung (Undo-Fenster)
   const [overlayStatus, setOverlayStatus] = useState<Record<number, Status>>({})
   const pendingRef = useRef<Record<number, { prev: Status; timer: ReturnType<typeof setTimeout> }>>(
     {},
@@ -39,17 +57,19 @@ const useJobs = () => {
 
   const { show } = useToast()
 
-  /* ---------- 1) Laden ---------- */
+  /* ---------- 1) Laden (zentral) ---------- */
   const loadData = useCallback(async () => {
     setLoading(true)
     setApiCallCount((c) => c + 1)
-
     try {
       const [freshJobs, freshStats] = await Promise.all([fetchJobs(), fetchStats()])
+
+      // Optimistische Overlays in die UI „projizieren“, ohne sie im State umzuschreiben
       const merged = freshJobs.map((j) => {
         const ov = overlayRef.current[j.id]
         return ov ? { ...j, status: ov } : j
       })
+
       setJobs((prev) => (isEqual(prev, merged) ? prev : merged))
       setStats((prev) => (isEqual(prev, freshStats) ? prev : freshStats))
       setLastUpdate(new Date())
@@ -63,16 +83,56 @@ const useJobs = () => {
     }
   }, [])
 
-  /* ---------- 2) Auto-Refresh ---------- */
+  /* ---------- Schutz vor Überlappung paralleler Loads ---------- */
+  const inFlightRef = useRef(false)
+
+  /* ---------- 2) Initial laden + bedingter Auto-Refresh ---------- */
   useEffect(() => {
+    // initial
     loadData()
-    const id = setInterval(async () => {
+
+    // Auto-Refresh pausieren, wenn Modal offen ist
+    if (!autoRefreshEnabled || detailsId != null) return
+    const tick = async () => {
+      if (inFlightRef.current) return
+      inFlightRef.current = true
       const y = window.scrollY
-      await loadData()
-      window.scrollTo({ top: y, behavior: 'auto' })
-      setRefreshCount((c) => c + 1)
-    }, UPDATE_INTERVAL)
+      try {
+        await loadData()
+      } finally {
+        inFlightRef.current = false
+        window.scrollTo({ top: y, behavior: 'auto' })
+        setRefreshCount((c) => c + 1)
+      }
+    }
+
+    const id = setInterval(tick, UPDATE_INTERVAL)
     return () => clearInterval(id)
+  }, [loadData, autoRefreshEnabled, detailsId])
+
+  /* ---------- Auto-Refresh bei versteckter Seite pausieren ----------*/
+
+  useEffect(() => {
+    const onVis = () => {
+      if (document.hidden) return
+      // Nur nachladen, wenn Auto-Refresh aktiv ist und KEINE Modalkarte offen ist
+      if (!autoRefreshEnabled || detailsId != null) return
+      if (!inFlightRef.current) void loadData()
+    }
+    document.addEventListener('visibilitychange', onVis)
+    return () => document.removeEventListener('visibilitychange', onVis)
+  }, [loadData, autoRefreshEnabled, detailsId])
+
+  /* ---------- Manuelles Nachladen (für „Jetzt aktualisieren“) ---------- */
+  const refreshNow = useCallback(async () => {
+    if (inFlightRef.current) return
+    inFlightRef.current = true
+    try {
+      await loadData()
+      setRefreshCount((c) => c + 1)
+    } finally {
+      inFlightRef.current = false
+    }
   }, [loadData])
 
   /* ---------- 3) Abgeleitete Daten ---------- */
@@ -82,6 +142,7 @@ const useJobs = () => {
   )
 
   /* ---------- 4) Status-Änderungen ---------- */
+  // Nicht-optimistische Variante (Legacy)
   const updateJobStatus = async (id: number, newStatus: Status) => {
     try {
       const updated = await patchJobStatus(id, newStatus)
@@ -94,21 +155,22 @@ const useJobs = () => {
     }
   }
 
+  // Optimistische Variante mit Undo-Fenster
   const updateJobStatusOptimistic = async (
     id: number,
     newStatus: Status,
     opts?: { undoWindowMs?: number },
   ) => {
     const undoWindowMs = opts?.undoWindowMs ?? 10_000
+
     const current = jobs.find((j) => j.id === id)
     if (!current) return
     const prev = current.status
     if (prev === newStatus) return
 
-    // Sofortiges UI-Update
+    // 1) Sofortiges UI-Update (Overlay + lokale Liste) + optimistische Stats-Delta
     setOverlayStatus((m) => ({ ...m, [id]: newStatus }))
     setJobs((arr) => arr.map((j) => (j.id === id ? { ...j, status: newStatus } : j)))
-    // Optimistische Stats-Delta
     setStats((s) => {
       const next = { ...s }
       next[prev] = Math.max(0, (Number(next[prev]) || 0) - 1)
@@ -116,10 +178,11 @@ const useJobs = () => {
       return next
     })
 
+    // 2) Server patchen
     try {
       await patchJobStatus(id, newStatus)
     } catch {
-      // harter Rollback
+      // 2b) harter Rollback
       setOverlayStatus(({ [id]: _, ...rest }) => rest)
       setJobs((arr) => arr.map((j) => (j.id === id ? { ...j, status: prev } : j)))
       setStats((s) => {
@@ -133,6 +196,7 @@ const useJobs = () => {
       return
     }
 
+    // 3) Undo-Fenster: Finalisierung nach Ablauf
     const existing = pendingRef.current[id]
     if (existing) clearTimeout(existing.timer)
 
@@ -144,9 +208,11 @@ const useJobs = () => {
         setStats((prev) => (isEqual(prev, freshStats) ? prev : freshStats))
       } catch {}
     }
+
     const timer = setTimeout(finalize, undoWindowMs)
     pendingRef.current[id] = { prev, timer }
 
+    // 4) Toast mit Undo-Aktion
     show({
       message: 'Status aktualisiert.',
       actionLabel: 'Rückgängig',
@@ -194,6 +260,11 @@ const useJobs = () => {
     selectedJob,
     openDetails,
     closeDetails,
+
+    // Auto-Refresh API
+    autoRefreshEnabled,
+    setAutoRefreshEnabled,
+    refreshNow,
 
     // Status-API
     updateJobStatus,

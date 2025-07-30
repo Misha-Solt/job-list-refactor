@@ -32,6 +32,11 @@ const JobList = () => {
 
     // Status API
     updateJobStatusOptimistic,
+
+    // Autorefresh
+    autoRefreshEnabled,
+    setAutoRefreshEnabled,
+    refreshNow,
   } = useJobs()
 
   // Nächster Status bestimmen
@@ -55,12 +60,18 @@ const JobList = () => {
 
   return (
     <div className={styles.container}>
-      <Header lastUpdate={lastUpdate} apiCallCount={apiCallCount} refreshCount={refreshCount} />
+      <Header
+        lastUpdate={lastUpdate}
+        apiCallCount={apiCallCount}
+        refreshCount={refreshCount}
+        autoRefreshEnabled={autoRefreshEnabled}
+        setAutoRefreshEnabled={setAutoRefreshEnabled}
+        onRefreshNow={refreshNow}
+      />
       <Filter selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} />
       <StatsBar stats={stats} />
       {error && <ErrorMessage message={error} />}
       <Loader loading={loading} />
-
       {/* JOB LIST */}
       <section className={styles.jobSection}>
         {filteredJobs.length > 0 ? (
@@ -77,14 +88,12 @@ const JobList = () => {
           <div className={styles.emptyMessage}>Keine Aufträge gefunden</div>
         )}
       </section>
-
       <Footer
         totalJobs={jobs.length}
         filteredJobs={jobs.length - filteredJobs.length}
         selectedFilter={selectedFilter}
         lastUpdate={lastUpdate}
       />
-
       {/* Eine einzige Modal-Instanz */}
       {detailsId != null && selectedJob && (
         <JobDetailsModal isOpen={true} onRequestClose={closeDetails} job={selectedJob} />

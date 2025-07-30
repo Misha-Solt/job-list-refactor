@@ -56,10 +56,3 @@
   --code-fg: #d7e6f3;
   --code-border: rgba(255, 255, 255, 0.06);
 }
-
-/* System-Default: wenn keine manuelle Wahl existiert */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) {
-    color-scheme: dark;
-  }
-}
