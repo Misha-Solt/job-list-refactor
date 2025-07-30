@@ -109,7 +109,7 @@
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
+@media (max-width: 415px) {
   .toast {
     animation: toast-enter 160ms ease-out;
   }
